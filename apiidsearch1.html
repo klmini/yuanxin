@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>迷你世界渠道ID查询器 · WinUI 3 风格 | 原心联创</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* WinUI 3 Fluent Design —— 亚克力背景 + 柔和动效 */
+        body {
+            background: #eef2f5;
+            font-family: 'Segoe UI Variable', 'Segoe UI', 'Segoe UI Display', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 32px 24px;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* 亚克力背景 (Acrylic) + 微妙纹理 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 20%, rgba(245, 250, 255, 0.7), rgba(230, 240, 248, 0.5));
+            backdrop-filter: blur(70px);
+            z-index: -2;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" opacity="0.08"><path fill="none" d="M0 0h800v800H0z"/><path fill="%23007acc" d="M400 100L500 200 400 300 300 200zM200 300L300 400 200 500 100 400zM600 300L700 400 600 500 500 400zM400 500L500 600 400 700 300 600z"/></svg>');
+            background-repeat: repeat;
+            background-size: 52px;
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* 主卡片通用样式 */
+        .winui-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(32px);
+            border-radius: 28px;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.08), 0 0 0 0.5px rgba(0, 0, 0, 0.02);
+            overflow: hidden;
+            transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1), box-shadow 0.2s ease;
+        }
+
+        .winui-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 24px 48px -16px rgba(0, 0, 0, 0.12);
+        }
+
+        .search-card {
+            margin-bottom: 28px;
+        }
+
+        /* 标题栏区域 (WinUI 风格，包含返回主页按钮) */
+        .card-header {
+            background: rgba(248, 250, 252, 0.6);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            padding: 18px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .title-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* 返回主页面按钮 (圆角，WinUI风格) */
+        .home-nav-btn {
+            background: rgba(0, 120, 212, 0.08);
+            border: 0.5px solid rgba(0, 120, 212, 0.25);
+            color: #106ebe;
+            font-weight: 500;
+            padding: 0 22px;
+            height: 38px;
+            font-size: 0.8rem;
+            border-radius: 40px;
+            backdrop-filter: blur(4px);
+            transition: all 0.18s cubic-bezier(0.2, 0.9, 0.4, 1.2);
+            cursor: pointer;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .home-nav-btn:hover {
+            background: rgba(0, 120, 212, 0.15);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0, 120, 212, 0.2);
+            border-color: #0078d4;
+        }
+        .home-nav-btn:active {
+            transform: translateY(1px);
+        }
+
+        .title-section h1 {
+            font-size: 1.65rem;
+            font-weight: 600;
+            background: linear-gradient(115deg, #1c5c3e, #2e7d5a);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+        }
+
+        .version-badge {
+            background: rgba(0, 120, 212, 0.12);
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #1a6d4c;
+            backdrop-filter: blur(4px);
+            border: 0.5px solid rgba(0,0,0,0.05);
+        }
+
+        /* 搜索区 */
+        .search-body {
+            padding: 24px 28px 20px;
+        }
+
+        .search-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .search-input-wrapper {
+            flex: 4;
+            min-width: 220px;
+            position: relative;
+        }
+
+        .search-input-wrapper i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-style: normal;
+            font-weight: 500;
+            color: #9aa2a6;
+            font-size: 1rem;
+            pointer-events: none;
+        }
+
+        .winui-input {
+            width: 100%;
+            padding: 12px 18px 12px 46px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 60px;
+            background: #fcfcfd;
+            outline: none;
+            transition: all 0.15s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            font-family: inherit;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
+        }
+
+        .winui-input:focus {
+            border-color: #0078d4;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.15);
+        }
+
+        .winui-button {
+            background: #ffffff;
+            border: 0.5px solid rgba(0, 0, 0, 0.12);
+            padding: 0 28px;
+            height: 48px;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.12s ease;
+            color: #1c1e21;
+            backdrop-filter: blur(4px);
+        }
+
+        .winui-button-primary {
+            background: #0078d4;
+            border: none;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 120, 212, 0.2);
+        }
+
+        .winui-button-primary:hover {
+            background: #106ebe;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 120, 212, 0.2);
+        }
+
+        .winui-button-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-1px);
+            border-color: rgba(0,0,0,0.2);
+        }
+
+        .winui-button:active {
+            transform: translateY(1px);
+        }
+
+        .hint-text {
+            font-size: 0.7rem;
+            color: #5f9b7e;
+            margin-top: 12px;
+            margin-left: 8px;
+        }
+
+        /* 结果卡片头部 */
+        .result-header {
+            padding: 18px 28px;
+            background: rgba(255, 255, 255, 0.5);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .result-header h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1e2f3c;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-badge {
+            background: rgba(0, 120, 212, 0.08);
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #106ebe;
+            backdrop-filter: blur(4px);
+        }
+
+        /* 表格容器 */
+        .table-wrapper {
+            overflow-x: auto;
+            padding: 8px 20px 16px;
+            transition: opacity 0.2s;
+        }
+
+        .channel-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            min-width: 1100px;
+        }
+
+        .channel-table th {
+            text-align: left;
+            padding: 16px 12px;
+            background: rgba(0, 0, 0, 0.02);
+            font-weight: 600;
+            color: #202124;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        .channel-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            color: #2c3e34;
+            vertical-align: middle;
+        }
+
+        .channel-table tr:hover td {
+            background: rgba(0, 120, 212, 0.04);
+        }
+
+        /* 渠道名称单元格 */
+        .channel-name {
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        /* ID 徽章 + 复制按钮 */
+        .badge-id {
+            background: #eef2f9;
+            font-family: 'Cascadia Mono', 'JetBrains Mono', monospace;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            display: inline-block;
+            color: #106ebe;
+            margin-right: 6px;
+            margin-bottom: 4px;
+        }
+
+        .copy-icon {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            padding: 4px 8px;
+            border-radius: 30px;
+            transition: all 0.15s;
+            color: #2c7da0;
+            vertical-align: middle;
+        }
+
+        .copy-icon:hover {
+            background: rgba(0, 120, 212, 0.1);
+            transform: scale(1.05);
+        }
+
+        .manufacturer-cell {
+            max-width: 240px;
+            word-break: break-word;
+            font-size: 0.8rem;
+            color: #5c6c66;
+        }
+
+        /* 分页样式 */
+        .pagination-modern {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            padding: 20px 24px 28px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .pagination-modern button {
+            background: white;
+            border: 0.5px solid rgba(0, 0, 0, 0.12);
+            padding: 6px 20px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.12s;
+            font-family: inherit;
+            font-size: 0.8rem;
+        }
+
+        .pagination-modern button:hover:not(:disabled) {
+            background: #f0f4fa;
+            transform: translateY(-1px);
+            border-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .pagination-modern button:disabled {
+            opacity: 0.45;
+            cursor: default;
+        }
+
+        .page-jump {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0,0,0,0.02);
+            padding: 4px 12px;
+            border-radius: 40px;
+        }
+
+        .page-jump input {
+            width: 62px;
+            padding: 6px;
+            text-align: center;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 32px;
+            font-family: monospace;
+            transition: 0.1s;
+        }
+
+        .page-jump input:focus {
+            border-color: #0078d4;
+            outline: none;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #7c8b84;
+            margin-top: 20px;
+            opacity: 0.8;
+        }
+
+        /* 加载与占位 */
+        .loading-cell {
+            text-align: center;
+            padding: 60px;
+            color: #4a6b5c;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            border: 2.5px solid rgba(0, 120, 212, 0.2);
+            border-top-color: #0078d4;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            vertical-align: middle;
+            margin-right: 12px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Toast 提示 */
+        .winui-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #202020e6;
+            backdrop-filter: blur(40px);
+            color: white;
+            padding: 10px 24px;
+            border-radius: 60px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            z-index: 10000;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            transition: all 0.2s ease;
+            border: 0.5px solid rgba(255,255,255,0.2);
+            pointer-events: none;
+        }
+
+        /* 响应式 */
+        @media (max-width: 860px) {
+            body { padding: 20px 16px; }
+            .card-header, .search-body, .result-header { padding-left: 20px; padding-right: 20px; }
+            .channel-name { white-space: normal; word-break: break-word; }
+            .manufacturer-cell { max-width: 160px; }
+        }
+
+        @media (max-width: 680px) {
+            .winui-button { padding: 0 18px; height: 44px; }
+            .pagination-modern { gap: 12px; }
+            .home-nav-btn { padding: 0 16px; height: 34px; font-size: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- 搜索卡片 -->
+    <div class="winui-card search-card">
+        <div class="card-header">
+            <div class="title-section">
+                <!-- 返回主页面按钮 (圆角，WinUI风格，跳转官网) -->
+                <button class="home-nav-btn" id="homeBtn">🏠 返回主页面</button>
+                <h1>迷你世界渠道ID查询器</h1>
+            </div>
+            <div class="version-badge">原心联创 · 数据版本 V1.4.6</div>
+        </div>
+        <div class="search-body">
+            <div class="search-box">
+                <div class="search-input-wrapper">
+                    <i>🔍</i>
+                    <input type="text" id="searchInput" class="winui-input" placeholder="搜索渠道名称、任意平台ID或运营商名称" autocomplete="off">
+                </div>
+                <button class="winui-button winui-button-primary" id="searchBtn">查询</button>
+                <button class="winui-button winui-button-secondary" id="resetBtn">重置</button>
+            </div>
+            <div class="hint-text">💡 提示：点击任意ID旁的 📋 按钮可复制，支持渠道名称、各平台ID及运营商搜索。</div>
+        </div>
+    </div>
+
+    <!-- 结果卡片 -->
+    <div class="winui-card result-card">
+        <div class="result-header">
+            <h2>📱 渠道对应ID表</h2>
+            <div class="stat-badge" id="statInfo">加载数据中...</div>
+        </div>
+        <div class="table-wrapper" id="tableWrapper">
+            <table class="channel-table">
+                <thead>
+                    <tr>
+                        <th>渠道名称</th>
+                        <th>Android ID</th>
+                        <th>Windows ID</th>
+                        <th>iOS / iPadOS ID</th>
+                        <th>HarmonyOS ID</th>
+                        <th>Game_Env ID</th>
+                        <th>合作渠道运营商</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr><td colspan="7" class="loading-cell"><div class="spinner"></div> 正在从云端同步渠道数据...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="pagination" class="pagination-modern"></div>
+    </div>
+    <footer>原心联创 保留所有权利 | 数据实时同步于官方 API (V1.4.6 - 2026-05-24) | 含合作渠道运营商信息</footer>
+</div>
+
+<script>
+    // ---------- 核心逻辑保持不变，UI 全面 WinUI3 化 ----------
+    let allChannels = [];
+    let filteredChannels = [];
+    let currentPage = 1;
+    const pageSize = 15;
+    let searchKeyword = "";
+
+    const searchInput = document.getElementById("searchInput");
+    const searchBtn = document.getElementById("searchBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const tableBody = document.getElementById("tableBody");
+    const paginationDiv = document.getElementById("pagination");
+    const statInfo = document.getElementById("statInfo");
+    const tableWrapper = document.getElementById("tableWrapper");
+
+    // 返回主页面按钮事件绑定
+    const homeBtn = document.getElementById("homeBtn");
+    if (homeBtn) {
+        homeBtn.addEventListener("click", () => {
+            window.location.href = "https://www.yuanxin520.top";
+        });
+    }
+
+    function showToast(msg, isError = false) {
+        const existing = document.querySelector('.winui-toast');
+        if (existing) existing.remove();
+        const toast = document.createElement("div");
+        toast.className = "winui-toast";
+        toast.textContent = msg;
+        if (isError) toast.style.background = "#c42b1ce6";
+        document.body.appendChild(toast);
+        setTimeout(() => toast.style.transform = "translateX(-50%) translateY(0px)", 10);
+        setTimeout(() => {
+            toast.style.opacity = "0";
+            toast.style.transform = "translateX(-50%) translateY(20px)";
+            setTimeout(() => toast.remove(), 250);
+        }, 2100);
+    }
+
+    async function copyId(value, label) {
+        if (!value || value === "-" || value === "?") {
+            showToast(`❌ 无有效ID可复制`, true);
+            return;
+        }
+        try {
+            await navigator.clipboard.writeText(value);
+            showToast(`✅ 已复制 ${label} : ${value}`);
+        } catch (err) {
+            showToast(`❌ 复制失败，请手动复制`, true);
+        }
+    }
+
+    function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>]/g, m => {
+            if (m === "&") return "&amp;";
+            if (m === "<") return "&lt;";
+            if (m === ">") return "&gt;";
+            return m;
+        });
+    }
+
+    function renderIdCell(value, platformName) {
+        if (!value || value === "-" || value === "?") return '<span style="color:#aaa;">-</span>';
+        const ids = value.toString().split(',').map(v => v.trim());
+        let idsHtml = '';
+        ids.forEach(id => {
+            idsHtml += `<span class="badge-id">${escapeHtml(id)}</span>`;
+        });
+        return `${idsHtml}<button class="copy-icon" data-copy="${escapeHtml(value)}" data-label="${platformName} ID">📋</button>`;
+    }
+
+    function renderTable() {
+        const start = (currentPage - 1) * pageSize;
+        const pageItems = filteredChannels.slice(start, start + pageSize);
+        if (pageItems.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:48px;">✨ 没有找到匹配的渠道，试试其他关键词 ✨</td></tr>`;
+            return;
+        }
+        let html = "";
+        for (const ch of pageItems) {
+            let manufacturerDisplay = ch.manufacturer;
+            if (!manufacturerDisplay || manufacturerDisplay === "null" || manufacturerDisplay === "") manufacturerDisplay = "-";
+            html += `<tr>
+                        <td class="channel-name" title="${escapeHtml(ch.name)}">${escapeHtml(ch.name)}</td>
+                        <td>${renderIdCell(ch.android, "Android")}</td>
+                        <td>${renderIdCell(ch.windows, "Windows")}</td>
+                        <td>${renderIdCell(ch.ios, "iOS")}</td>
+                        <td>${renderIdCell(ch.harmony, "HarmonyOS")}</td>
+                        <td>${renderIdCell(ch.gameEnv, "Game_Env")}</td>
+                        <td class="manufacturer-cell" title="${escapeHtml(manufacturerDisplay)}">${escapeHtml(manufacturerDisplay)}</td>
+                     </tr>`;
+        }
+        tableBody.innerHTML = html;
+
+        // 绑定复制事件
+        document.querySelectorAll('.copy-icon').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const copyVal = btn.getAttribute('data-copy');
+                const label = btn.getAttribute('data-label');
+                copyId(copyVal, label);
+            });
+        });
+    }
+
+    function renderPagination() {
+        const total = filteredChannels.length;
+        const totalPages = Math.ceil(total / pageSize);
+        if (totalPages <= 1 && total <= pageSize) {
+            paginationDiv.innerHTML = `<span style="color:#5f7370;">共 ${total} 条渠道记录</span>`;
+            return;
+        }
+        let paginHtml = `
+            <button id="prevPageBtn" ${currentPage === 1 ? "disabled" : ""}>◀ 上一页</button>
+            <span style="font-size:0.85rem;">第 ${currentPage} / ${totalPages} 页</span>
+            <button id="nextPageBtn" ${currentPage === totalPages ? "disabled" : ""}>下一页 ▶</button>
+            <div class="page-jump">
+                <span>跳转</span>
+                <input type="number" id="jumpInput" min="1" max="${totalPages}" value="${currentPage}">
+                <button id="jumpBtn" style="background:transparent;">GO</button>
+            </div>
+            <span style="font-size:0.75rem;">共 ${total} 项</span>
+        `;
+        paginationDiv.innerHTML = paginHtml;
+
+        const prevBtn = document.getElementById("prevPageBtn");
+        const nextBtn = document.getElementById("nextPageBtn");
+        if (prevBtn) prevBtn.addEventListener("click", () => { if (currentPage > 1) { currentPage--; renderTable(); renderPagination(); } });
+        if (nextBtn) nextBtn.addEventListener("click", () => { if (currentPage < totalPages) { currentPage++; renderTable(); renderPagination(); } });
+        const jumpBtn = document.getElementById("jumpBtn");
+        const jumpInput = document.getElementById("jumpInput");
+        if (jumpBtn) {
+            jumpBtn.addEventListener("click", () => {
+                let target = parseInt(jumpInput.value);
+                if (isNaN(target)) target = 1;
+                target = Math.min(totalPages, Math.max(1, target));
+                if (target !== currentPage) {
+                    currentPage = target;
+                    renderTable();
+                    renderPagination();
+                }
+                jumpInput.value = target;
+            });
+        }
+    }
+
+    function updateStat() {
+        const total = filteredChannels.length;
+        const all = allChannels.length;
+        if (searchKeyword) {
+            statInfo.innerHTML = `🔍 找到 ${total} 个渠道 (共 ${all} 个)`;
+        } else {
+            statInfo.innerHTML = `📦 全渠道共 ${all} 个 (支持渠道名称/ID/运营商搜索)`;
+        }
+    }
+
+    function filterChannels() {
+        const keyword = searchInput.value.trim().toLowerCase();
+        searchKeyword = keyword;
+        if (keyword === "") {
+            filteredChannels = [...allChannels];
+        } else {
+            filteredChannels = allChannels.filter(ch => {
+                if (ch.name && ch.name.toLowerCase().includes(keyword)) return true;
+                const allIdStr = `${ch.android || ''}|${ch.windows || ''}|${ch.ios || ''}|${ch.harmony || ''}|${ch.gameEnv || ''}`;
+                if (allIdStr.toLowerCase().includes(keyword)) return true;
+                if (ch.manufacturer && ch.manufacturer.toLowerCase().includes(keyword)) return true;
+                return false;
+            });
+        }
+        currentPage = 1;
+        renderTable();
+        renderPagination();
+        updateStat();
+    }
+
+    function resetSearch() {
+        searchInput.value = "";
+        searchKeyword = "";
+        filteredChannels = [...allChannels];
+        currentPage = 1;
+        renderTable();
+        renderPagination();
+        updateStat();
+        showToast("已重置筛选，显示全部渠道");
+    }
+
+    // 解析 API 数据 (稳健 JSON 对象分割)
+    function parseApiData(text) {
+        const channels = [];
+        let braceDepth = 0;
+        let startIdx = 0;
+        for (let i = 0; i < text.length; i++) {
+            if (text[i] === '{') {
+                if (braceDepth === 0) startIdx = i;
+                braceDepth++;
+            } else if (text[i] === '}') {
+                braceDepth--;
+                if (braceDepth === 0 && i > startIdx) {
+                    let objStr = text.substring(startIdx, i + 1);
+                    try {
+                        const obj = JSON.parse(objStr);
+                        channels.push({
+                            name: obj.name || "未知",
+                            android: obj.android || null,
+                            windows: obj.windows || null,
+                            ios: obj.ios || null,
+                            harmony: obj.harmony || null,
+                            gameEnv: obj.gameEnv || null,
+                            manufacturer: obj.manufacturer || null
+                        });
+                    } catch (e) {
+                        console.warn("解析JSON对象失败:", objStr, e);
+                    }
+                }
+            }
+        }
+        return channels;
+    }
+
+    async function loadData() {
+        const apiUrl = "https://api.yuanxin520.top/api/apiid/apiid.txt";
+        tableBody.innerHTML = `<tr><td colspan="7" class="loading-cell"><div class="spinner"></div> 正在从云端同步渠道数据...</td></tr>`;
+        statInfo.innerHTML = "📡 连接云端...";
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000);
+            const response = await fetch(apiUrl, { signal: controller.signal });
+            clearTimeout(timeoutId);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const text = await response.text();
+            const parsed = parseApiData(text);
+            if (parsed.length === 0) throw new Error("解析数据为空");
+            allChannels = parsed;
+            filteredChannels = [...allChannels];
+            renderTable();
+            renderPagination();
+            updateStat();
+            showToast(`✅ 数据加载成功，共 ${allChannels.length} 条渠道记录`);
+        } catch (err) {
+            console.error(err);
+            tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:48px;">⚠️ 加载渠道数据失败，请检查网络连接后刷新页面重试</td></tr>`;
+            statInfo.innerHTML = "❌ 加载失败";
+            showToast("数据加载失败，请检查网络后刷新页面", true);
+        }
+    }
+
+    searchBtn.addEventListener("click", filterChannels);
+    resetBtn.addEventListener("click", resetSearch);
+    searchInput.addEventListener("keypress", (e) => { if (e.key === "Enter") filterChannels(); });
+
+    loadData();
+</script>
+</body>
+</html>

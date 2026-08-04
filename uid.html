@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>迷你世界账号信息查询器 - 原心联创</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #d4efe3 0%, #b8d9c8 100%);
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 24px;
+            min-height: 100vh;
+            animation: bgShift 12s ease-in-out infinite alternate;
+        }
+
+        @keyframes bgShift {
+            0% { background: linear-gradient(145deg, #d4efe3 0%, #b8d9c8 100%); }
+            100% { background: linear-gradient(135deg, #cbe8dd 0%, #a6cebc 100%); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* 卡片通用样式 */
+        .card {
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 32px;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(2px);
+            overflow: hidden;
+            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1), box-shadow 0.3s ease;
+            animation: cardAppear 0.5s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @keyframes cardAppear {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .search-card {
+            margin-bottom: 32px;
+            animation-delay: 0.05s;
+        }
+
+        .result-card {
+            animation-delay: 0.1s;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 28px 40px -16px rgba(0, 0, 0, 0.25);
+        }
+
+        .search-header {
+            background: linear-gradient(120deg, #2a7f55, #1d5e3f);
+            padding: 20px 28px;
+            color: white;
+        }
+
+        .search-header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .version {
+            font-size: 0.75rem;
+            background: rgba(255, 255, 220, 0.25);
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-weight: normal;
+            transition: transform 0.2s;
+        }
+
+        .version:hover {
+            transform: scale(1.02);
+        }
+
+        .search-body {
+            padding: 24px 28px;
+        }
+
+        .search-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 4;
+            min-width: 220px;
+            padding: 14px 20px;
+            border: 2px solid #cde0d6;
+            border-radius: 60px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            background: white;
+        }
+
+        .search-input:focus {
+            border-color: #2a7f55;
+            box-shadow: 0 0 0 4px rgba(42, 127, 85, 0.15);
+            transform: scale(1.01);
+        }
+
+        .btn {
+            padding: 0 28px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            background: #2a7f55;
+            color: white;
+            height: 52px;
+        }
+
+        .btn-outline {
+            background: #eef5f1;
+            color: #1d5e3f;
+            border: 1px solid #c2dfd0;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+            background: #1d5e3f;
+        }
+
+        .btn:active {
+            transform: translateY(1px) scale(0.98);
+        }
+
+        .btn-outline:hover {
+            background: #e0f0e8;
+            color: #0e442f;
+        }
+
+        .result-header {
+            padding: 18px 28px;
+            background: #fafff8;
+            border-bottom: 2px solid #e2f0e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .result-header h2 {
+            font-size: 1.2rem;
+            color: #1a5a3c;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stats {
+            background: #e9f3ed;
+            padding: 6px 20px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #1a5a3c;
+            transition: all 0.2s;
+        }
+
+        .stats:hover {
+            transform: scale(1.02);
+            background: #ddeee4;
+        }
+
+        /* 双栏布局 */
+        .results-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            padding: 20px;
+        }
+
+        .profile-card {
+            flex: 2;
+            min-width: 280px;
+            background: white;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+
+        .ip-card {
+            flex: 1;
+            min-width: 260px;
+            background: white;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+
+        .profile-banner {
+            background: linear-gradient(135deg, #e0efe8, #cde0d6);
+            padding: 24px 28px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #d4e8dd;
+        }
+
+        .avatar-area {
+            text-align: center;
+        }
+
+        .player-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 100px;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.1);
+            background: #f0f5f2;
+        }
+
+        .player-name-box {
+            flex: 1;
+        }
+
+        .player-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1d5e3f;
+            word-break: break-all;
+        }
+
+        .player-uin {
+            font-size: 0.9rem;
+            color: #6f9c87;
+            margin-top: 6px;
+            font-family: monospace;
+        }
+
+        .player-level {
+            background: #2a7f55;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            padding: 28px;
+            background: #fefef9;
+        }
+
+        .info-item {
+            background: #ffffffcc;
+            backdrop-filter: blur(4px);
+            border-radius: 24px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+            border: 1px solid #e8f0ea;
+        }
+
+        .info-icon {
+            font-size: 1.8rem;
+            min-width: 48px;
+            text-align: center;
+        }
+
+        .info-content {
+            flex: 1;
+        }
+
+        .info-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: #8fbba6;
+            letter-spacing: 1px;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1a5a3c;
+            word-break: break-word;
+            margin-top: 4px;
+        }
+
+        .mood-text {
+            grid-column: span 2;
+            background: #eef5f1;
+            border-left: 4px solid #2a7f55;
+        }
+
+        /* IP 卡片样式 */
+        .ip-header {
+            background: linear-gradient(120deg, #3a7b5f, #2a6a4a);
+            padding: 18px 24px;
+            color: white;
+        }
+        .ip-header h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .ip-content {
+            padding: 24px;
+        }
+        .ip-info-item {
+            background: #f9fdfb;
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid #e2efe6;
+        }
+        .ip-info-label {
+            font-size: 0.75rem;
+            color: #8fbba6;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+        .ip-info-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1d5e3f;
+            word-break: break-all;
+        }
+        .ip-placeholder {
+            color: #b0c8bc;
+            font-style: italic;
+        }
+        .ip-note {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #e2efe6;
+            font-size: 0.7rem;
+            color: #8fbba6;
+            text-align: center;
+        }
+
+        .error-box {
+            padding: 40px;
+            text-align: center;
+            color: #b3442c;
+            background: #fff5f2;
+            border-radius: 28px;
+            margin: 20px;
+        }
+
+        .loading-box {
+            padding: 60px;
+            text-align: center;
+            color: #2a7f55;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            border: 3px solid #d4e6dd;
+            border-top-color: #2a7f55;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #6c927e;
+            margin-top: 20px;
+            animation: fadeInUp 0.5s ease-out 0.2s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 980px) {
+            body { padding: 16px; }
+            .search-header h1 { font-size: 1.3rem; }
+            .search-body, .result-header { padding-left: 16px; padding-right: 16px; }
+            .profile-banner { flex-direction: column; text-align: center; }
+            .info-grid { grid-template-columns: 1fr; gap: 12px; padding: 20px; }
+            .mood-text { grid-column: span 1; }
+            .player-name { font-size: 1.4rem; }
+            .results-grid { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- 搜索卡片 -->
+    <div class="card search-card">
+        <div class="search-header">
+            <h1>
+                迷你世界·账号信息查询器
+                <span class="version">原心联创技术支持</span>
+            </h1>
+        </div>
+        <div class="search-body">
+            <div class="search-box">
+                <input type="text" id="uinInput" class="search-input" placeholder="请输入迷你号 (例如: 1000)" autocomplete="off" inputmode="numeric">
+                <button class="btn" id="searchBtn">查询账号</button>
+                <button class="btn btn-outline" id="resetBtn">清空</button>
+            </div>
+            <div style="font-size:0.7rem; color:#6f9c87; margin-top:12px;">⚡ 迷你世界·账号信息查询器/div>
+        </div>
+    </div>
+
+    <!-- 结果卡片（双栏布局） -->
+    <div class="card result-card">
+        <div class="result-header">
+            <h2>👤 账号档案</h2>
+            <div class="stats" id="statInfo">等待查询</div>
+        </div>
+        <div id="resultContainer">
+            <div class="profile-wrapper">
+                <div class="loading-box">
+                    <div class="spinner"></div>
+                    <p style="margin-top:12px;">输入迷你号，查询档案~</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>原心联创  账号信息实时查询</footer>
+</div>
+
+<script>
+    const uinInput = document.getElementById('uinInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const resultContainer = document.getElementById('resultContainer');
+    const statInfo = document.getElementById('statInfo');
+
+    // 接口地址
+    const PROFILE_API = 'https://api.yuafeng.cn/API/ly/mini_cha.php?uin=';
+    const IP_API = 'https://api.yuafeng.cn/API/ly/mini_ip.php?uin=';
+
+    // 通用工具函数
+    function formatTimestamp(timestamp) {
+        if (!timestamp) return '未知';
+        const date = new Date(timestamp * 1000);
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+    }
+
+    function formatNumber(num) {
+        if (num === undefined || num === null) return '0';
+        return num.toLocaleString();
+    }
+
+    function cleanMoodText(text) {
+        if (!text) return '暂无签名';
+        let cleaned = text.replace(/#[bB]/g, '').replace(/#[lL]/g, '').replace(/#[cC][0-9A-Fa-f]{6}/g, '');
+        cleaned = cleaned.replace(/\s+/g, ' ').trim();
+        return cleaned || '暂无签名';
+    }
+
+    function showToast(message, isError = false) {
+        const toast = document.createElement('div');
+        toast.textContent = message;
+        toast.style.position = 'fixed';
+        toast.style.bottom = '30px';
+        toast.style.left = '50%';
+        toast.style.transform = 'translateX(-50%)';
+        toast.style.backgroundColor = isError ? '#c23b22' : '#1e3a2f';
+        toast.style.color = 'white';
+        toast.style.padding = '10px 24px';
+        toast.style.borderRadius = '60px';
+        toast.style.fontSize = '0.9rem';
+        toast.style.zIndex = '9999';
+        toast.style.backdropFilter = 'blur(8px)';
+        toast.style.boxShadow = '0 8px 18px rgba(0,0,0,0.15)';
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.2s';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.style.opacity = '1', 10);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, 2000);
+    }
+
+    function renderError(msg, detail = '') {
+        statInfo.innerHTML = '❌ 查询失败';
+        resultContainer.innerHTML = `
+            <div class="profile-wrapper">
+                <div class="error-box">
+                    <div style="font-size:2rem; margin-bottom:12px;">⚠️</div>
+                    <div style="font-weight:500;">${escapeHtml(msg)}</div>
+                    <div style="font-size:0.8rem; margin-top:12px;">${escapeHtml(detail)}</div>
+                    <div style="font-size:0.7rem; margin-top:16px; color:#8fbba6;">请检查迷你号是否正确或稍后再试</div>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderLoading() {
+        statInfo.innerHTML = '🔄 查询中...';
+        resultContainer.innerHTML = `
+            <div class="profile-wrapper">
+                <div class="loading-box">
+                    <div class="spinner"></div>
+                    <p style="margin-top:12px;">正在查询账号档案及IP归属地...</p>
+                </div>
+            </div>
+        `;
+    }
+
+    // 渲染账号档案（左侧）
+    function renderProfile(data) {
+        const uin = data.uin || '--';
+        const name = data.name || '无名玩家';
+        const level = data.level ?? 0;
+        const avatar = data.avatar || 'https://image.mini1.cn/roleicon/0.png';
+        const lastLogin = formatTimestamp(data.last_login_time);
+        const gender = data.gender || '保密';
+        const friendNum = formatNumber(data.friend_num);
+        const followNum = formatNumber(data.follow_num);
+        const fansNum = formatNumber(data.fans_num);
+        const friendBeapply = formatNumber(data.friend_beapply);
+        const moodRaw = data.mood_text || '';
+        const mood = cleanMoodText(moodRaw);
+        const mapTotal = formatNumber(data.map_total_count);
+        const mapDownload = formatNumber(data.map_download_count);
+        const mapLike = formatNumber(data.map_like_count);
+        const mapVisit = formatNumber(data.map_visit_count);
+        const createTime = formatTimestamp(data.create_time);
+        const avatarFrameCount = data.avatar_frame_count ?? 0;
+        const popularity = formatNumber(data.popularity);
+
+        return `
+            <div class="profile-card">
+                <div class="profile-banner">
+                    <div class="avatar-area">
+                        <img class="player-avatar" src="${avatar}" alt="头像" onerror="this.src='https://image.mini1.cn/roleicon/0.png'">
+                    </div>
+                    <div class="player-name-box">
+                        <div class="player-name">${escapeHtml(name)}</div>
+                        <div class="player-uin">迷你号: ${uin}</div>
+                        <div style="margin-top:10px;"><span class="player-level">✨ Lv.${level}</span></div>
+                    </div>
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-icon">🎂</div>
+                        <div class="info-content">
+                            <div class="info-label">注册时间</div>
+                            <div class="info-value">${createTime}</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">📅</div>
+                        <div class="info-content">
+                            <div class="info-label">最后登录</div>
+                            <div class="info-value">${lastLogin}</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">🚻</div>
+                        <div class="info-content">
+                            <div class="info-label">性别</div>
+                            <div class="info-value">${escapeHtml(gender)}</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">👥</div>
+                        <div class="info-content">
+                            <div class="info-label">好友 / 关注 / 粉丝</div>
+                            <div class="info-value">${friendNum} / ${followNum} / ${fansNum}</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">💌</div>
+                        <div class="info-content">
+                            <div class="info-label">收到好友申请</div>
+                            <div class="info-value">${friendBeapply}</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">🔥</div>
+                        <div class="info-content">
+                            <div class="info-label">人气值</div>
+                            <div class="info-value">${popularity}</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">🖼️</div>
+                        <div class="info-content">
+                            <div class="info-label">头像框数量</div>
+                            <div class="info-value">${avatarFrameCount} 个</div>
+                        </div>
+                    </div>
+                    <div class="info-item mood-text">
+                        <div class="info-icon">💬</div>
+                        <div class="info-content">
+                            <div class="info-label">个人签名</div>
+                            <div class="info-value">“${escapeHtml(mood)}”</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">🗺️</div>
+                        <div class="info-content">
+                            <div class="info-label">地图总数</div>
+                            <div class="info-value">${mapTotal}</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">⬇️</div>
+                        <div class="info-content">
+                            <div class="info-label">地图总下载</div>
+                            <div class="info-value">${mapDownload}</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">❤️</div>
+                        <div class="info-content">
+                            <div class="info-label">地图获赞</div>
+                            <div class="info-value">${mapLike}</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">👀</div>
+                        <div class="info-content">
+                            <div class="info-label">地图访问量</div>
+                            <div class="info-value">${mapVisit}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // 渲染IP归属地信息（右侧）
+    function renderIpInfo(data) {
+        const uin = data.uin || '--';
+        const addr = data.addr || '未知';
+        const caddr = data.caddr || '未知';
+        return `
+            <div class="ip-card">
+                <div class="ip-header">
+                    <h3>
+                        <span>🌐</span> IP归属地信息
+                    </h3>
+                </div>
+                <div class="ip-content">
+                    <div class="ip-info-item">
+                        <div class="ip-info-label">迷你号</div>
+                        <div class="ip-info-value">${escapeHtml(uin)}</div>
+                    </div>
+                    <div class="ip-info-item">
+                        <div class="ip-info-label">所属省份</div>
+                        <div class="ip-info-value">${escapeHtml(addr)}</div>
+                    </div>
+                    <div class="ip-info-item">
+                        <div class="ip-info-label">所属城市</div>
+                        <div class="ip-info-value">${escapeHtml(caddr)}</div>
+                    </div>
+                    <div class="ip-note">
+                        📍 基于账号IP地址定位，仅供参考
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // 同时请求两个接口
+    async function queryAccount() {
+        let rawUin = uinInput.value.trim();
+        if (rawUin === '') {
+            showToast('请输入迷你号', true);
+            return;
+        }
+        if (!/^\d+$/.test(rawUin)) {
+            showToast('迷你号必须是纯数字', true);
+            return;
+        }
+        renderLoading();
+
+        try {
+            // 使用 Promise.all 并发请求两个接口
+            const [profileResult, ipResult] = await Promise.allSettled([
+                fetch(PROFILE_API + rawUin).then(res => res.json()),
+                fetch(IP_API + rawUin).then(res => res.json())
+            ]);
+
+            // 处理账号档案
+            let profileHtml = '';
+            let profileSuccess = false;
+            if (profileResult.status === 'fulfilled' && profileResult.value && profileResult.value.code === 0 && profileResult.value.data) {
+                profileHtml = renderProfile(profileResult.value.data);
+                profileSuccess = true;
+            } else {
+                let errorMsg = '账号档案获取失败';
+                if (profileResult.status === 'rejected') errorMsg = profileResult.reason?.message || '网络错误';
+                else if (profileResult.value?.msg) errorMsg = profileResult.value.msg;
+                profileHtml = `
+                    <div class="profile-card">
+                        <div class="ip-header" style="background: #c23b22;">
+                            <h3>❌ 账号档案查询失败</h3>
+                        </div>
+                        <div class="ip-content">
+                            <div class="ip-info-item">
+                                <div class="ip-info-value" style="color:#b3442c;">${escapeHtml(errorMsg)}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 处理IP归属地
+            let ipHtml = '';
+            let ipSuccess = false;
+            if (ipResult.status === 'fulfilled' && ipResult.value && ipResult.value.code === 0 && ipResult.value.data) {
+                ipHtml = renderIpInfo(ipResult.value.data);
+                ipSuccess = true;
+            } else {
+                let errorMsg = 'IP归属地获取失败';
+                if (ipResult.status === 'rejected') errorMsg = ipResult.reason?.message || '网络错误';
+                else if (ipResult.value?.msg) errorMsg = ipResult.value.msg;
+                ipHtml = `
+                    <div class="ip-card">
+                        <div class="ip-header" style="background: #c23b22;">
+                            <h3>❌ IP归属地查询失败</h3>
+                        </div>
+                        <div class="ip-content">
+                            <div class="ip-info-item">
+                                <div class="ip-info-value" style="color:#b3442c;">${escapeHtml(errorMsg)}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 组装双栏布局
+            const finalHtml = `
+                <div class="results-grid">
+                    ${profileHtml}
+                    ${ipHtml}
+                </div>
+            `;
+            resultContainer.innerHTML = finalHtml;
+
+            if (profileSuccess && ipSuccess) {
+                statInfo.innerHTML = '✅ 查询成功（账号信息 + IP归属地）';
+                showToast('查询成功');
+            } else if (profileSuccess || ipSuccess) {
+                statInfo.innerHTML = '⚠️ 部分查询成功';
+                showToast('部分数据获取失败', true);
+            } else {
+                statInfo.innerHTML = '❌ 查询失败';
+                showToast('所有接口均获取失败', true);
+            }
+        } catch (err) {
+            console.error('查询失败:', err);
+            renderError('网络错误或接口不可用', err.message || '请检查网络连接后重试');
+            showToast('查询失败', true);
+        }
+    }
+
+    function resetQuery() {
+        uinInput.value = '';
+        statInfo.innerHTML = '等待查询';
+        resultContainer.innerHTML = `
+            <div class="profile-wrapper">
+                <div class="loading-box">
+                    <div class="spinner"></div>
+                    <p style="margin-top:12px;">输入迷你号，查询公开档案及IP归属地~</p>
+                </div>
+            </div>
+        `;
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    searchBtn.addEventListener('click', queryAccount);
+    resetBtn.addEventListener('click', resetQuery);
+    uinInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') queryAccount();
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>迷你世界渠道ID查询器 - 原心联创</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #d4efe3 0%, #b8d9c8 100%);
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 24px;
+            min-height: 100vh;
+            animation: bgShift 12s ease-in-out infinite alternate;
+        }
+
+        @keyframes bgShift {
+            0% { background: linear-gradient(145deg, #d4efe3 0%, #b8d9c8 100%); }
+            100% { background: linear-gradient(135deg, #cbe8dd 0%, #a6cebc 100%); }
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 32px;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(2px);
+            overflow: hidden;
+            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1), box-shadow 0.3s ease;
+            animation: cardAppear 0.5s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @keyframes cardAppear {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .search-card {
+            margin-bottom: 32px;
+            animation-delay: 0.05s;
+        }
+
+        .result-card {
+            animation-delay: 0.1s;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 28px 40px -16px rgba(0, 0, 0, 0.25);
+        }
+
+        .search-header {
+            background: linear-gradient(120deg, #2a7f55, #1d5e3f);
+            padding: 20px 28px;
+            color: white;
+        }
+
+        .search-header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .version {
+            font-size: 0.75rem;
+            background: rgba(255, 255, 220, 0.25);
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-weight: normal;
+            transition: transform 0.2s;
+        }
+
+        .version:hover {
+            transform: scale(1.02);
+        }
+
+        .search-body {
+            padding: 24px 28px;
+        }
+
+        .search-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 4;
+            min-width: 220px;
+            padding: 14px 20px;
+            border: 2px solid #cde0d6;
+            border-radius: 60px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            background: white;
+        }
+
+        .search-input:focus {
+            border-color: #2a7f55;
+            box-shadow: 0 0 0 4px rgba(42, 127, 85, 0.15);
+            transform: scale(1.01);
+        }
+
+        .btn {
+            padding: 0 28px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            background: #2a7f55;
+            color: white;
+            height: 52px;
+        }
+
+        .btn-outline {
+            background: #eef5f1;
+            color: #1d5e3f;
+            border: 1px solid #c2dfd0;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+            background: #1d5e3f;
+        }
+
+        .btn:active {
+            transform: translateY(1px) scale(0.98);
+        }
+
+        .btn-outline:hover {
+            background: #e0f0e8;
+            color: #0e442f;
+        }
+
+        .result-header {
+            padding: 18px 28px;
+            background: #fafff8;
+            border-bottom: 2px solid #e2f0e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .result-header h2 {
+            font-size: 1.2rem;
+            color: #1a5a3c;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stats {
+            background: #e9f3ed;
+            padding: 6px 20px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #1a5a3c;
+            transition: all 0.2s;
+        }
+
+        .stats:hover {
+            transform: scale(1.02);
+            background: #ddeee4;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            padding: 0 20px 20px;
+            transition: opacity 0.2s ease;
+        }
+
+        .channel-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+
+        .channel-table th {
+            text-align: left;
+            padding: 16px 12px;
+            background: #f4fbf7;
+            color: #1e5c3e;
+            font-weight: 600;
+            border-bottom: 2px solid #d4e8dd;
+            white-space: nowrap;
+        }
+
+        .channel-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #e4f0e8;
+            color: #2a4a38;
+            vertical-align: middle;
+        }
+
+        .channel-table tr:hover td {
+            background: #fafff8;
+            box-shadow: inset 0 0 0 1px #cce6db;
+        }
+
+        .badge-id {
+            background: #e5f0ea;
+            font-family: monospace;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            display: inline-block;
+            color: #1c6b48;
+            margin-right: 6px;
+        }
+
+        .copy-icon {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 2px 6px;
+            border-radius: 20px;
+            transition: all 0.2s;
+            color: #2a7f55;
+            vertical-align: middle;
+        }
+
+        .copy-icon:hover {
+            background: #e0f0e8;
+            transform: scale(1.1);
+        }
+
+        .channel-name {
+            font-weight: 500;
+            word-break: keep-all;
+            white-space: nowrap;
+        }
+
+        .manufacturer-cell {
+            max-width: 220px;
+            white-space: normal;
+            word-break: break-word;
+            font-size: 0.85rem;
+            color: #5b7a68;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            padding: 20px 20px 28px;
+            border-top: 1px solid #e2efe6;
+            background: #fefef9;
+        }
+
+        .pagination button {
+            background: white;
+            border: 1px solid #cde0d4;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.2);
+            color: #2a7f55;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: #e2f3ea;
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .pagination button:active:not(:disabled) {
+            transform: translateY(1px) scale(0.98);
+        }
+
+        .pagination button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .page-jump {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .page-jump input {
+            width: 65px;
+            padding: 6px;
+            text-align: center;
+            border: 1px solid #cde0d4;
+            border-radius: 40px;
+            transition: all 0.2s;
+        }
+
+        .page-jump input:focus {
+            border-color: #2a7f55;
+            outline: none;
+            transform: scale(1.02);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #2a7f55;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            border: 3px solid #d4e6dd;
+            border-top-color: #2a7f55;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #6c927e;
+            margin-top: 20px;
+            animation: fadeInUp 0.5s ease-out 0.2s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 1200px) {
+            body { padding: 16px; }
+            .search-header h1 { font-size: 1.3rem; }
+            .search-body, .result-header, .table-wrapper { padding-left: 16px; padding-right: 16px; }
+            .channel-name { white-space: normal; word-break: break-word; }
+            .badge-id { font-size: 0.7rem; }
+            .manufacturer-cell { max-width: 180px; }
+        }
+
+        @media (max-width: 680px) {
+            .manufacturer-cell { max-width: 140px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card search-card">
+        <div class="search-header">
+            <h1>
+                迷你世界渠道ID查询器
+                <span class="version">原心联创提供技术支持 · 数据版本 V1.4.6</span>
+            </h1>
+        </div>
+        <div class="search-body">
+            <div class="search-box">
+                <input type="text" id="searchInput" class="search-input" placeholder="输入渠道名称、任意平台ID或运营商名称" autocomplete="off">
+                <button class="btn" id="searchBtn">查询</button>
+                <button class="btn btn-outline" id="resetBtn">重置</button>
+            </div>
+            <div style="font-size:0.7rem; color:#6f9c87; margin-top:12px;">💡 提示：点击任意ID旁的📋按钮可复制，支持搜索渠道名称、任意平台ID及合作渠道运营商名称。</div>
+        </div>
+    </div>
+
+    <div class="card result-card">
+        <div class="result-header">
+            <h2>📱 渠道对应ID表</h2>
+            <div class="stats" id="statInfo">加载数据中...</div>
+        </div>
+        <div class="table-wrapper" id="tableWrapper">
+            <table class="channel-table">
+                <thead>
+                    <tr>
+                        <th>渠道名称</th>
+                        <th>Android ID</th>
+                        <th>Windows ID</th>
+                        <th>iOS / iPadOS ID</th>
+                        <th>HarmonyOS ID</th>
+                        <th>Game_Env ID</th>
+                        <th>合作渠道运营商</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr><td colspan="7" class="loading"><div class="spinner"></div> 正在从云端加载渠道数据...请稍候</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="pagination" class="pagination"></div>
+    </div>
+    <footer>原心联创 保留所有权利 | 数据实时同步于官方 API (V1.4.6 - 2026-05-24) | 含合作渠道运营商信息</footer>
+</div>
+
+<script>
+    let allChannels = [];
+    let filteredChannels = [];
+    let currentPage = 1;
+    const pageSize = 15;
+    let searchKeyword = "";
+
+    const searchInput = document.getElementById("searchInput");
+    const searchBtn = document.getElementById("searchBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const tableBody = document.getElementById("tableBody");
+    const paginationDiv = document.getElementById("pagination");
+    const statInfo = document.getElementById("statInfo");
+    const tableWrapper = document.getElementById("tableWrapper");
+
+    // 显示提示消息
+    function showToast(msg, isError = false) {
+        const toast = document.createElement("div");
+        toast.textContent = msg;
+        toast.style.position = "fixed";
+        toast.style.bottom = "30px";
+        toast.style.left = "50%";
+        toast.style.transform = "translateX(-50%)";
+        toast.style.backgroundColor = isError ? "#c23b22" : "#1e3a2f";
+        toast.style.color = "white";
+        toast.style.padding = "10px 24px";
+        toast.style.borderRadius = "60px";
+        toast.style.fontSize = "0.9rem";
+        toast.style.zIndex = "9999";
+        toast.style.backdropFilter = "blur(8px)";
+        toast.style.boxShadow = "0 8px 18px rgba(0,0,0,0.15)";
+        toast.style.opacity = "0";
+        toast.style.transition = "opacity 0.2s";
+        document.body.appendChild(toast);
+        setTimeout(() => toast.style.opacity = "1", 10);
+        setTimeout(() => {
+            toast.style.opacity = "0";
+            setTimeout(() => toast.remove(), 300);
+        }, 2000);
+    }
+
+    // 复制ID到剪贴板
+    async function copyId(value, label) {
+        if (!value || value === "-" || value === "?") {
+            showToast(`❌ 无有效ID可复制`, true);
+            return;
+        }
+        try {
+            await navigator.clipboard.writeText(value);
+            showToast(`✅ 已复制 ${label} : ${value}`);
+        } catch (err) {
+            showToast(`❌ 复制失败`, true);
+        }
+    }
+
+    // 渲染ID单元格（含复制按钮）
+    function renderIdCell(value, platformName) {
+        if (!value || value === "-" || value === "?") return '<span style="color:#aaa;">-</span>';
+        const ids = value.toString().split(',').map(v => v.trim());
+        let html = '';
+        ids.forEach(id => {
+            html += `<span class="badge-id">${escapeHtml(id)}</span>`;
+        });
+        html += `<button class="copy-icon" data-copy="${escapeHtml(value)}" data-label="${platformName} ID">📋</button>`;
+        return html;
+    }
+
+    // 渲染表格
+    function renderTable() {
+        const start = (currentPage - 1) * pageSize;
+        const pageItems = filteredChannels.slice(start, start + pageSize);
+        if (pageItems.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:40px;">✨ 没有找到匹配的渠道，试试其他关键词 ✨</td></tr>`;
+            return;
+        }
+        let html = "";
+        for (const ch of pageItems) {
+            // 处理制造商显示
+            let manufacturerDisplay = ch.manufacturer;
+            if (!manufacturerDisplay || manufacturerDisplay === "null" || manufacturerDisplay === "") {
+                manufacturerDisplay = "-";
+            }
+            html += `<tr>
+                        <td class="channel-name" title="${escapeHtml(ch.name)}">${escapeHtml(ch.name)}</td>
+                        <td>${renderIdCell(ch.android, "Android")}</td>
+                        <td>${renderIdCell(ch.windows, "Windows")}</td>
+                        <td>${renderIdCell(ch.ios, "iOS")}</td>
+                        <td>${renderIdCell(ch.harmony, "HarmonyOS")}</td>
+                        <td>${renderIdCell(ch.gameEnv, "Game_Env")}</td>
+                        <td class="manufacturer-cell" title="${escapeHtml(manufacturerDisplay)}">${escapeHtml(manufacturerDisplay)}</td>
+                     </tr>`;
+        }
+        tableBody.innerHTML = html;
+
+        // 绑定复制按钮事件
+        document.querySelectorAll('.copy-icon').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const copyVal = btn.getAttribute('data-copy');
+                const label = btn.getAttribute('data-label');
+                copyId(copyVal, label);
+            });
+        });
+    }
+
+    // 渲染分页控件
+    function renderPagination() {
+        const total = filteredChannels.length;
+        const totalPages = Math.ceil(total / pageSize);
+        if (totalPages <= 1) {
+            paginationDiv.innerHTML = `<span style="color:#6f9c87;">共 ${total} 条渠道记录</span>`;
+            return;
+        }
+        let paginHtml = `
+            <button id="prevPageBtn" ${currentPage === 1 ? "disabled" : ""}>◀ 上一页</button>
+            <span>第 ${currentPage} / ${totalPages} 页</span>
+            <button id="nextPageBtn" ${currentPage === totalPages ? "disabled" : ""}>下一页 ▶</button>
+            <div class="page-jump">
+                <span>跳转</span>
+                <input type="number" id="jumpInput" min="1" max="${totalPages}" value="${currentPage}">
+                <button id="jumpBtn">GO</button>
+            </div>
+            <span style="margin-left:8px;">共 ${total} 项</span>
+        `;
+        paginationDiv.innerHTML = paginHtml;
+
+        document.getElementById("prevPageBtn")?.addEventListener("click", () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable();
+                renderPagination();
+            }
+        });
+        document.getElementById("nextPageBtn")?.addEventListener("click", () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderTable();
+                renderPagination();
+            }
+        });
+        const jumpBtn = document.getElementById("jumpBtn");
+        const jumpInput = document.getElementById("jumpInput");
+        if (jumpBtn) {
+            jumpBtn.addEventListener("click", () => {
+                let target = parseInt(jumpInput.value);
+                if (isNaN(target)) target = 1;
+                target = Math.min(totalPages, Math.max(1, target));
+                if (target !== currentPage) {
+                    currentPage = target;
+                    renderTable();
+                    renderPagination();
+                }
+                jumpInput.value = target;
+            });
+        }
+    }
+
+    // 更新统计信息
+    function updateStat() {
+        const total = filteredChannels.length;
+        const all = allChannels.length;
+        if (searchKeyword) {
+            statInfo.innerHTML = `🔍 找到 ${total} 个渠道 (共 ${all} 个)`;
+        } else {
+            statInfo.innerHTML = `📦 全渠道共 ${all} 个 (支持渠道名称/ID/运营商搜索)`;
+        }
+    }
+
+    // 过滤渠道（支持渠道名称、任意平台ID、运营商）
+    function filterChannels() {
+        const keyword = searchInput.value.trim().toLowerCase();
+        searchKeyword = keyword;
+        if (keyword === "") {
+            filteredChannels = [...allChannels];
+        } else {
+            filteredChannels = allChannels.filter(ch => {
+                // 搜索渠道名称
+                if (ch.name && ch.name.toLowerCase().includes(keyword)) return true;
+                // 搜索各平台ID字符串
+                const allIdStr = `${ch.android || ''}|${ch.windows || ''}|${ch.ios || ''}|${ch.harmony || ''}|${ch.gameEnv || ''}`;
+                if (allIdStr.toLowerCase().includes(keyword)) return true;
+                // 搜索合作渠道运营商
+                if (ch.manufacturer && ch.manufacturer.toLowerCase().includes(keyword)) return true;
+                return false;
+            });
+        }
+        currentPage = 1;
+        renderTable();
+        renderPagination();
+        updateStat();
+    }
+
+    // 重置搜索
+    function resetSearch() {
+        searchInput.value = "";
+        searchKeyword = "";
+        filteredChannels = [...allChannels];
+        currentPage = 1;
+        renderTable();
+        renderPagination();
+        updateStat();
+    }
+
+    // HTML转义
+    function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>]/g, m => {
+            if (m === "&") return "&amp;";
+            if (m === "<") return "&lt;";
+            if (m === ">") return "&gt;";
+            return m;
+        });
+    }
+
+    // 解析API返回的文本（每个JSON对象占一行，或连续拼接）
+    function parseApiData(text) {
+        const channels = [];
+        // 尝试按 }\n{ 分割，兼容换行分隔或连续拼接
+        let objects = [];
+        // 方法：将文本按 "}\n{" 或 "} {" 分割，同时保留每个对象的完整性
+        // 更稳健的方法：手动遍历，提取正确的JSON对象
+        let braceDepth = 0;
+        let startIdx = 0;
+        for (let i = 0; i < text.length; i++) {
+            if (text[i] === '{') {
+                if (braceDepth === 0) startIdx = i;
+                braceDepth++;
+            } else if (text[i] === '}') {
+                braceDepth--;
+                if (braceDepth === 0 && i > startIdx) {
+                    let objStr = text.substring(startIdx, i + 1);
+                    try {
+                        const obj = JSON.parse(objStr);
+                        channels.push({
+                            name: obj.name || "未知",
+                            android: obj.android || null,
+                            windows: obj.windows || null,
+                            ios: obj.ios || null,
+                            harmony: obj.harmony || null,
+                            gameEnv: obj.gameEnv || null,
+                            manufacturer: obj.manufacturer || null
+                        });
+                    } catch (e) {
+                        console.warn("解析JSON对象失败:", objStr, e);
+                    }
+                }
+            }
+        }
+        return channels;
+    }
+
+    // 加载远程数据
+    async function loadData() {
+        const apiUrl = "https://api.yuanxin520.top/api/apiid/apiid.txt";
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000);
+            const response = await fetch(apiUrl, { signal: controller.signal });
+            clearTimeout(timeoutId);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const text = await response.text();
+            const parsed = parseApiData(text);
+            if (parsed.length === 0) throw new Error("解析数据为空");
+            allChannels = parsed;
+            filteredChannels = [...allChannels];
+            renderTable();
+            renderPagination();
+            updateStat();
+            showToast(`✅ 数据加载成功，共 ${allChannels.length} 条渠道记录`);
+        } catch (err) {
+            console.error(err);
+            tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:40px;">⚠️ 加载渠道数据失败，请检查网络连接后刷新页面重试</td></tr>`;
+            statInfo.innerHTML = "❌ 加载失败";
+            showToast("数据加载失败，请检查网络后刷新页面", true);
+        }
+    }
+
+    // 绑定事件
+    searchBtn.addEventListener("click", filterChannels);
+    resetBtn.addEventListener("click", resetSearch);
+    searchInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") filterChannels();
+    });
+
+    // 启动
+    loadData();
+</script>
+</body>
+</html>

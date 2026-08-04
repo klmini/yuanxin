@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>设备列表 </title>
+
+    <!-- ===== 字体与图标库 ===== -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+
+    <style>
+        /* ============================================================
+               全局重置 & 主题变量 (Fluent Design 2.0 色彩体系)
+               ============================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-canvas: #f0f2f5;
+            --bg-acrylic: rgba(255, 255, 255, 0.72);
+            --bg-surface: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #5a5a5a;
+            --text-tertiary: #8a8a8a;
+            --accent: #0078d4;
+            --accent-hover: #106ebe;
+            --accent-light: #e5f1fb;
+            --border-light: #e6e8ec;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+            --shadow-md: 0 8px 28px rgba(0, 0, 0, 0.07), 0 2px 8px rgba(0, 0, 0, 0.02);
+            --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.08);
+            --radius-card: 16px;
+            --radius-pill: 32px;
+            --transition: 0.2s cubic-bezier(0.2, 0.9, 0.4, 1);
+            --font-family: 'Segoe UI', 'Segoe UI Variable', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-canvas);
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(0, 120, 212, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(0, 120, 212, 0.04) 0%, transparent 50%),
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            min-height: 100vh;
+            padding: 40px 24px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            color: var(--text-primary);
+        }
+
+        /* ============================================================
+               主容器 — 亚克力 (Acrylic) 质感增强
+               ============================================================ */
+        .app-container {
+            max-width: 1160px;
+            width: 100%;
+            background: var(--bg-acrylic);
+            backdrop-filter: blur(60px) saturate(1.5);
+            -webkit-backdrop-filter: blur(60px) saturate(1.5);
+            background-color: rgba(255, 255, 255, 0.75);
+            border-radius: var(--radius-card);
+            box-shadow: var(--shadow-lg), 0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+            padding: 36px 36px 32px;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        /* ============================================================
+               页眉 — 导航 / 标题 / 统计 (更精致)
+               ============================================================ */
+        .app-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-left .icon-back {
+            font-size: 20px;
+            color: var(--text-secondary);
+            opacity: 0.6;
+            transition: var(--transition);
+            cursor: default;
+            padding: 6px 8px;
+            border-radius: 8px;
+        }
+
+        .header-left .icon-back:hover {
+            opacity: 1;
+            color: var(--accent);
+            background: rgba(0, 120, 212, 0.06);
+        }
+
+        .header-left h1 {
+            font-weight: 700;
+            font-size: 26px;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+        }
+
+        .header-left h1 span {
+            font-weight: 300;
+            color: var(--text-secondary);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .header-right .badge-count {
+            background: var(--accent);
+            color: #fff;
+            font-weight: 600;
+            font-size: 13px;
+            padding: 4px 14px;
+            border-radius: var(--radius-pill);
+            letter-spacing: 0.01em;
+            box-shadow: 0 2px 8px rgba(0, 120, 212, 0.25);
+        }
+
+        .header-right .refresh-btn {
+            background: transparent;
+            border: none;
+            font-size: 18px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 8px 10px;
+            border-radius: 10px;
+        }
+
+        .header-right .refresh-btn:hover {
+            background: rgba(0, 0, 0, 0.04);
+            color: var(--accent);
+        }
+
+        .header-right .refresh-btn:active i {
+            transform: rotate(60deg);
+        }
+
+        .header-right .refresh-btn i {
+            transition: transform 0.4s ease;
+        }
+
+        /* ============================================================
+               工具栏 — 搜索 & 筛选 (WinUI 风格)
+               ============================================================ */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px 20px;
+            margin-bottom: 32px;
+        }
+
+        .search-box {
+            flex: 1 1 260px;
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: var(--radius-pill);
+            padding: 0 18px;
+            border: 1px solid var(--border-light);
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .search-box:focus-within {
+            background: #ffffff;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.15);
+        }
+
+        .search-box i {
+            color: var(--text-tertiary);
+            font-size: 15px;
+            margin-right: 12px;
+        }
+
+        .search-box input {
+            border: none;
+            background: transparent;
+            padding: 11px 0;
+            font-size: 14px;
+            font-family: var(--font-family);
+            width: 100%;
+            outline: none;
+            color: var(--text-primary);
+        }
+
+        .search-box input::placeholder {
+            color: var(--text-tertiary);
+            font-weight: 400;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tabs button {
+            background: transparent;
+            border: none;
+            padding: 8px 20px;
+            border-radius: var(--radius-pill);
+            font-size: 13px;
+            font-weight: 500;
+            font-family: var(--font-family);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
+
+        .filter-tabs button:hover {
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        .filter-tabs button.active {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 2px 12px rgba(0, 120, 212, 0.3);
+            border-color: var(--accent);
+        }
+
+        /* ============================================================
+               列表容器 — 精致卡片列表
+               ============================================================ */
+        .device-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* ============================================================
+               列表项卡片 — 悬停动效 + 精致细节
+               ============================================================ */
+        .device-item {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-surface);
+            padding: 18px 24px;
+            border-radius: var(--radius-card);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0, 0, 0, 0.02);
+            transition: var(--transition);
+            cursor: default;
+            gap: 12px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 左侧彩色装饰条 (Reveal 效果) */
+        .device-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: transparent;
+            transition: var(--transition);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .device-item:hover::before {
+            background: var(--accent);
+        }
+
+        .device-item:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+            border-color: rgba(0, 120, 212, 0.08);
+            background: #ffffff;
+        }
+
+        /* 左侧信息区域 */
+        .device-info {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex: 2 1 320px;
+            min-width: 200px;
+        }
+
+        .device-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--accent-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: var(--accent);
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+        .device-item:hover .device-icon {
+            background: rgba(0, 120, 212, 0.15);
+            transform: scale(1.02);
+        }
+
+        .device-name-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .device-name {
+            font-weight: 600;
+            font-size: 17px;
+            letter-spacing: -0.01em;
+            color: var(--text-primary);
+        }
+
+        .device-system {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .device-system i {
+            margin-right: 6px;
+            opacity: 0.5;
+        }
+
+        /* 中间信息 (日期 / 天数) — 更精致 */
+        .device-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px 20px;
+            flex: 1 1 220px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .device-meta .date-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .device-meta .date-group i {
+            opacity: 0.4;
+            font-size: 13px;
+        }
+
+        .device-meta .days-badge {
+            background: var(--accent-light);
+            padding: 3px 14px;
+            border-radius: var(--radius-pill);
+            font-weight: 500;
+            font-size: 12px;
+            color: var(--accent);
+            white-space: nowrap;
+        }
+
+        /* 右侧状态 + 厂商 */
+        .device-status-group {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex: 0 1 auto;
+            margin-left: auto;
+        }
+
+        .status-badge {
+            font-weight: 600;
+            font-size: 13px;
+            padding: 4px 14px 4px 30px;
+            border-radius: var(--radius-pill);
+            letter-spacing: 0.01em;
+            background: rgba(0, 0, 0, 0.04);
+            color: var(--text-secondary);
+            white-space: nowrap;
+            position: relative;
+        }
+
+        /* 状态小圆点 */
+        .status-badge::before {
+            content: '';
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-tertiary);
+            transition: var(--transition);
+        }
+
+        .status-badge.active {
+            background: #dff6dd;
+            color: #0a7a3a;
+        }
+
+        .status-badge.active::before {
+            background: #0a7a3a;
+            box-shadow: 0 0 0 2px rgba(10, 122, 58, 0.15);
+        }
+
+        .status-badge.expired {
+            background: #fde7e9;
+            color: #b13a3a;
+        }
+
+        .status-badge.expired::before {
+            background: #b13a3a;
+            box-shadow: 0 0 0 2px rgba(177, 58, 58, 0.15);
+        }
+
+        .manufacturer {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .manufacturer i {
+            font-size: 13px;
+            opacity: 0.4;
+        }
+
+        /* ============================================================
+               加载 & 空状态 (骨架屏 + 精致占位)
+               ============================================================ */
+        .loading-placeholder,
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-tertiary);
+        }
+
+        .loading-placeholder i,
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 20px;
+            opacity: 0.2;
+        }
+
+        .loading-placeholder p,
+        .empty-state p {
+            font-size: 16px;
+            font-weight: 400;
+        }
+
+        /* 骨架屏 (Skeleton) */
+        .skeleton-item {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px 20px;
+            background: var(--bg-surface);
+            padding: 18px 24px;
+            border-radius: var(--radius-card);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0, 0, 0, 0.02);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .skeleton-item .skeleton-block {
+            background: #e6e8ec;
+            border-radius: 8px;
+            height: 16px;
+        }
+
+        .skeleton-item .skeleton-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: #e6e8ec;
+            flex-shrink: 0;
+        }
+
+        .skeleton-item .skeleton-line {
+            flex: 1 1 200px;
+            height: 14px;
+            background: #e6e8ec;
+            border-radius: 8px;
+        }
+
+        .skeleton-item .skeleton-line.short {
+            flex: 0 1 80px;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        /* ============================================================
+               响应式优化
+               ============================================================ */
+        @media (max-width: 820px) {
+            body {
+                padding: 20px 12px;
+            }
+            .app-container {
+                padding: 24px 16px 20px;
+            }
+            .app-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .device-item {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 18px;
+            }
+            .device-item::before {
+                width: 3px;
+            }
+            .device-status-group {
+                margin-left: 0;
+                justify-content: flex-start;
+                padding-top: 10px;
+                border-top: 1px solid var(--border-light);
+            }
+            .device-meta {
+                gap: 8px 16px;
+            }
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .filter-tabs {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-left h1 {
+                font-size: 20px;
+            }
+            .device-name {
+                font-size: 15px;
+            }
+            .device-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+            .device-item {
+                padding: 14px;
+            }
+            .status-badge {
+                padding: 4px 12px 4px 26px;
+                font-size: 12px;
+            }
+            .status-badge::before {
+                left: 10px;
+                width: 6px;
+                height: 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+
+        <!-- ====== 页眉 ====== -->
+        <header class="app-header">
+            <div class="header-left">
+                <span class="icon-back"><i class="fas fa-chevron-left"></i></span>
+                <h1>设备 <span>清单</span></h1>
+            </div>
+            <div class="header-right">
+                <span class="badge-count" id="countBadge">0</span>
+                <button class="refresh-btn" id="refreshBtn" title="刷新数据">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- ====== 工具栏 ====== -->
+        <div class="toolbar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="搜索设备名称..." />
+            </div>
+            <div class="filter-tabs" id="filterTabs">
+                <button class="active" data-filter="all">全部</button>
+                <button data-filter="生效中">生效中</button>
+                <button data-filter="已过期">已过期</button>
+            </div>
+        </div>
+
+        <!-- ====== 列表 ====== -->
+        <div class="device-list" id="deviceList">
+            <!-- 骨架屏由 JavaScript 动态生成 -->
+        </div>
+
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ---------- DOM 引用 ----------
+            const listContainer = document.getElementById('deviceList');
+            const searchInput = document.getElementById('searchInput');
+            const filterTabs = document.getElementById('filterTabs');
+            const countBadge = document.getElementById('countBadge');
+            const refreshBtn = document.getElementById('refreshBtn');
+
+            // ---------- 状态 ----------
+            let allDevices = [];
+            let filteredDevices = [];
+            let currentFilter = 'all';
+            let searchKeyword = '';
+            let isLoading = false;
+
+            // ---------- 工具函数 ----------
+            function formatDate(dateStr) {
+                if (!dateStr) return '—';
+                return dateStr;
+            }
+
+            function getStatusClass(status) {
+                if (!status) return '';
+                const s = status.trim();
+                if (s === '生效中') return 'active';
+                if (s === '已过期') return 'expired';
+                return '';
+            }
+
+            function getDeviceIcon(name) {
+                if (!name) return 'fa-microchip';
+                const lower = name.toLowerCase();
+                if (lower.includes('redmi') || lower.includes('xiaomi')) return 'fa-mobile-alt';
+                if (lower.includes('google') || lower.includes('pixel')) return 'fa-android';
+                if (lower.includes('iphone') || lower.includes('apple')) return 'fa-apple';
+                if (lower.includes('laptop') || lower.includes('book')) return 'fa-laptop';
+                if (lower.includes('server')) return 'fa-server';
+                return 'fa-desktop';
+            }
+
+            function escapeHtml(text) {
+                if (!text) return '';
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            // ---------- 渲染骨架屏 ----------
+            function renderSkeleton() {
+                let html = '';
+                for (let i = 0; i < 5; i++) {
+                    html += `
+                        <div class="skeleton-item">
+                            <div class="skeleton-icon"></div>
+                            <div class="skeleton-line" style="flex:2;"></div>
+                            <div class="skeleton-line" style="flex:1;"></div>
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line short"></div>
+                        </div>
+                    `;
+                }
+                listContainer.innerHTML = html;
+                countBadge.textContent = '…';
+            }
+
+            // ---------- 渲染列表 ----------
+            function renderList(devices) {
+                if (!devices || devices.length === 0) {
+                    listContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>没有找到匹配的设备</p>
+                        </div>
+                    `;
+                    countBadge.textContent = '0';
+                    return;
+                }
+
+                let html = '';
+                for (const item of devices) {
+                    const iconClass = getDeviceIcon(item.name);
+                    const statusClass = getStatusClass(item.Status);
+                    const days = item.days || '—';
+                    const statusText = escapeHtml(item.Status || '未知');
+
+                    html += `
+                        <div class="device-item">
+                            <div class="device-info">
+                                <div class="device-icon">
+                                    <i class="fas ${iconClass}"></i>
+                                </div>
+                                <div class="device-name-group">
+                                    <span class="device-name">${escapeHtml(item.name || '未知设备')}</span>
+                                    <span class="device-system">
+                                        <i class="fas fa-code"></i> ${escapeHtml(item.System || '—')}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="device-meta">
+                                <span class="date-group">
+                                    <i class="far fa-calendar-alt"></i>
+                                    ${formatDate(item['Start time'])}
+                                </span>
+                                <span class="date-group">
+                                    <i class="far fa-calendar-check"></i>
+                                    ${formatDate(item['End time'])}
+                                </span>
+                                <span class="days-badge">
+                                    <i class="far fa-clock"></i> ${days} 天
+                                </span>
+                            </div>
+
+                            <div class="device-status-group">
+                                <span class="status-badge ${statusClass}">${statusText}</span>
+                                <span class="manufacturer">
+                                    <i class="fas fa-building"></i> ${escapeHtml(item.manufacturer || '—')}
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                listContainer.innerHTML = html;
+                countBadge.textContent = devices.length;
+            }
+
+            // ---------- 过滤 & 搜索 ----------
+            function applyFilters() {
+                let result = allDevices.slice();
+
+                if (currentFilter !== 'all') {
+                    result = result.filter(item => item.Status && item.Status.trim() === currentFilter);
+                }
+
+                if (searchKeyword.trim() !== '') {
+                    const keyword = searchKeyword.trim().toLowerCase();
+                    result = result.filter(item =>
+                        item.name && item.name.toLowerCase().includes(keyword)
+                    );
+                }
+
+                filteredDevices = result;
+                renderList(filteredDevices);
+            }
+
+            // ---------- 获取数据 ----------
+            function fetchData() {
+                if (isLoading) return;
+                isLoading = true;
+                renderSkeleton();
+
+                const url = 'https://api.yuanxin520.top/api/apiid/device.txt';
+
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.text();
+                    })
+                    .then(text => {
+                        const lines = text.split('\n').filter(line => line.trim() !== '');
+                        const devices = [];
+
+                        for (const line of lines) {
+                            try {
+                                const obj = JSON.parse(line.trim());
+                                if (obj && typeof obj === 'object') {
+                                    devices.push(obj);
+                                }
+                            } catch (e) {
+                                console.warn('跳过无效行:', line);
+                            }
+                        }
+
+                        if (devices.length === 0) {
+                            throw new Error('未解析到有效设备数据');
+                        }
+
+                        allDevices = devices;
+                        applyFilters();
+                        isLoading = false;
+                    })
+                    .catch(error => {
+                        console.error('获取数据失败:', error);
+                        listContainer.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <p>加载失败，请刷新重试</p>
+                                <p style="font-size:13px; margin-top:8px; opacity:0.6;">${escapeHtml(error.message)}</p>
+                            </div>
+                        `;
+                        countBadge.textContent = '!';
+                        isLoading = false;
+                    });
+            }
+
+            // ---------- 事件绑定 ----------
+            filterTabs.addEventListener('click', (e) => {
+                const btn = e.target.closest('button');
+                if (!btn) return;
+                const filter = btn.dataset.filter;
+                if (!filter) return;
+
+                document.querySelectorAll('#filterTabs button').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                currentFilter = filter;
+                applyFilters();
+            });
+
+            let searchTimer = null;
+            searchInput.addEventListener('input', () => {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(() => {
+                    searchKeyword = searchInput.value;
+                    applyFilters();
+                }, 200);
+            });
+
+            refreshBtn.addEventListener('click', () => {
+                const icon = refreshBtn.querySelector('i');
+                icon.style.transform = 'rotate(360deg)';
+                setTimeout(() => { icon.style.transition = 'none'; icon.style.transform = 'rotate(0deg)'; }, 400);
+                setTimeout(() => { icon.style.transition = ''; }, 500);
+                fetchData();
+            });
+
+            // ---------- 启动 ----------
+            fetchData();
+
+        })();
+    </script>
+
+</body>
+</html>

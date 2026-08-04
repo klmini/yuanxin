@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>迷你世界账号信息查询器 · WinUI 3 风格 | 原心联创</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* WinUI 3 Fluent Design —— 亚克力背景 + 柔和动效 */
+        body {
+            background: #eef2f5;
+            font-family: 'Segoe UI Variable', 'Segoe UI', 'Segoe UI Display', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 32px 24px;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* 亚克力背景 (Acrylic) + 微妙纹理 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 20%, rgba(245, 250, 255, 0.7), rgba(230, 240, 248, 0.5));
+            backdrop-filter: blur(70px);
+            z-index: -2;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" opacity="0.08"><path fill="none" d="M0 0h800v800H0z"/><path fill="%23007acc" d="M400 100L500 200 400 300 300 200zM200 300L300 400 200 500 100 400zM600 300L700 400 600 500 500 400zM400 500L500 600 400 700 300 600z"/></svg>');
+            background-repeat: repeat;
+            background-size: 52px;
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* 主卡片样式 */
+        .winui-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(32px);
+            border-radius: 28px;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.08), 0 0 0 0.5px rgba(0, 0, 0, 0.02);
+            overflow: hidden;
+            transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1), box-shadow 0.2s ease;
+        }
+
+        .winui-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 24px 48px -16px rgba(0, 0, 0, 0.12);
+        }
+
+        .search-card {
+            margin-bottom: 28px;
+        }
+
+        /* 标题栏区域 (WinUI 风格) */
+        .card-header {
+            background: rgba(248, 250, 252, 0.6);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            padding: 18px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .title-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* 返回主页面按钮 (圆角，WinUI风格) */
+        .home-nav-btn {
+            background: rgba(0, 120, 212, 0.08);
+            border: 0.5px solid rgba(0, 120, 212, 0.25);
+            color: #106ebe;
+            font-weight: 500;
+            padding: 0 22px;
+            height: 38px;
+            font-size: 0.8rem;
+            border-radius: 40px;
+            backdrop-filter: blur(4px);
+            transition: all 0.18s cubic-bezier(0.2, 0.9, 0.4, 1.2);
+            cursor: pointer;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .home-nav-btn:hover {
+            background: rgba(0, 120, 212, 0.15);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0, 120, 212, 0.2);
+            border-color: #0078d4;
+        }
+        .home-nav-btn:active {
+            transform: translateY(1px);
+        }
+
+        .title-section h1 {
+            font-size: 1.65rem;
+            font-weight: 600;
+            background: linear-gradient(115deg, #1c5c3e, #2e7d5a);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+        }
+
+        .version-badge {
+            background: rgba(0, 120, 212, 0.12);
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #1a6d4c;
+            backdrop-filter: blur(4px);
+            border: 0.5px solid rgba(0,0,0,0.05);
+        }
+
+        /* 搜索区域 */
+        .search-body {
+            padding: 24px 28px 20px;
+        }
+
+        .search-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .search-input-wrapper {
+            flex: 4;
+            min-width: 220px;
+            position: relative;
+        }
+
+        .search-input-wrapper i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-style: normal;
+            font-weight: 500;
+            color: #9aa2a6;
+            font-size: 1rem;
+            pointer-events: none;
+        }
+
+        .winui-input {
+            width: 100%;
+            padding: 12px 18px 12px 46px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 60px;
+            background: #fcfcfd;
+            outline: none;
+            transition: all 0.15s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            font-family: inherit;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
+        }
+
+        .winui-input:focus {
+            border-color: #0078d4;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.15);
+        }
+
+        .winui-button {
+            background: #ffffff;
+            border: 0.5px solid rgba(0, 0, 0, 0.12);
+            padding: 0 28px;
+            height: 48px;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.12s ease;
+            color: #1c1e21;
+            backdrop-filter: blur(4px);
+        }
+
+        .winui-button-primary {
+            background: #0078d4;
+            border: none;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 120, 212, 0.2);
+        }
+
+        .winui-button-primary:hover {
+            background: #106ebe;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 120, 212, 0.2);
+        }
+
+        .winui-button-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-1px);
+            border-color: rgba(0,0,0,0.2);
+        }
+
+        .winui-button:active {
+            transform: translateY(1px);
+        }
+
+        .hint-text {
+            font-size: 0.7rem;
+            color: #5f9b7e;
+            margin-top: 12px;
+            margin-left: 8px;
+        }
+
+        /* 结果卡片头部 */
+        .result-header {
+            padding: 18px 28px;
+            background: rgba(255, 255, 255, 0.5);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .result-header h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1e2f3c;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-badge {
+            background: rgba(0, 120, 212, 0.08);
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #106ebe;
+            backdrop-filter: blur(4px);
+        }
+
+        /* 双栏布局 (WinUI 风格间距) */
+        .results-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 28px;
+            padding: 24px 28px 32px;
+        }
+
+        .profile-card {
+            flex: 2;
+            min-width: 280px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            transition: all 0.2s;
+        }
+
+        .ip-card {
+            flex: 1.2;
+            min-width: 260px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            transition: all 0.2s;
+        }
+
+        .profile-banner {
+            background: linear-gradient(115deg, #f0f6f2, #e6f0ea);
+            padding: 24px 28px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .avatar-area {
+            text-align: center;
+        }
+
+        .player-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 100px;
+            object-fit: cover;
+            border: 3px solid white;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+            background: #f0f5f2;
+        }
+
+        .player-name-box {
+            flex: 1;
+        }
+
+        .player-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1d5e3f;
+            word-break: break-all;
+        }
+
+        .player-uin {
+            font-size: 0.9rem;
+            color: #6f9c87;
+            margin-top: 6px;
+            font-family: monospace;
+        }
+
+        .player-level {
+            background: #2a7f55;
+            color: white;
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        /* 信息网格 (WinUI 风格卡片内) */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            padding: 28px;
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .info-item {
+            background: #ffffffcc;
+            backdrop-filter: blur(4px);
+            border-radius: 24px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: all 0.2s;
+            border: 1px solid rgba(0,0,0,0.03);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+
+        .info-item:hover {
+            background: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .info-icon {
+            font-size: 1.8rem;
+            min-width: 48px;
+            text-align: center;
+        }
+
+        .info-content {
+            flex: 1;
+        }
+
+        .info-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: #8fbba6;
+            letter-spacing: 1px;
+        }
+
+        .info-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1a5a3c;
+            word-break: break-word;
+            margin-top: 4px;
+        }
+
+        .mood-text {
+            grid-column: span 2;
+            background: #eef5f1;
+            border-left: 4px solid #2a7f55;
+        }
+
+        /* IP 卡片样式 */
+        .ip-header {
+            background: linear-gradient(115deg, #ecf5f0, #e0ede6);
+            padding: 18px 24px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        .ip-header h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1d5e3f;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .ip-content {
+            padding: 24px;
+        }
+        .ip-info-item {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(4px);
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+        .ip-info-label {
+            font-size: 0.7rem;
+            color: #8fbba6;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+        .ip-info-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1d5e3f;
+            word-break: break-all;
+        }
+        .ip-note {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            font-size: 0.7rem;
+            color: #8fbba6;
+            text-align: center;
+        }
+
+        /* 错误/加载占位 */
+        .error-box {
+            padding: 40px;
+            text-align: center;
+            color: #b3442c;
+            background: #fff5f2;
+            border-radius: 28px;
+            margin: 20px;
+        }
+
+        .loading-box {
+            padding: 60px;
+            text-align: center;
+            color: #2a7f55;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            border: 3px solid rgba(0, 120, 212, 0.2);
+            border-top-color: #0078d4;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #7c8b84;
+            margin-top: 20px;
+            opacity: 0.8;
+        }
+
+        /* Toast 提示 */
+        .winui-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #202020e6;
+            backdrop-filter: blur(40px);
+            color: white;
+            padding: 10px 24px;
+            border-radius: 60px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            z-index: 10000;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            transition: all 0.2s ease;
+            border: 0.5px solid rgba(255,255,255,0.2);
+            pointer-events: none;
+        }
+
+        @media (max-width: 860px) {
+            body { padding: 20px 16px; }
+            .card-header, .search-body, .result-header { padding-left: 20px; padding-right: 20px; }
+            .results-grid { padding: 20px; gap: 20px; }
+            .info-grid { grid-template-columns: 1fr; padding: 20px; }
+            .mood-text { grid-column: span 1; }
+            .profile-banner { flex-direction: column; text-align: center; }
+            .player-name { font-size: 1.4rem; }
+            .home-nav-btn { padding: 0 16px; height: 34px; font-size: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- 搜索卡片 -->
+    <div class="winui-card search-card">
+        <div class="card-header">
+            <div class="title-section">
+                <!-- 返回主页面圆角按钮 -->
+                <button class="home-nav-btn" id="homeBtn">🏠 返回主页面</button>
+                <h1>迷你世界 · 账号信息查询器</h1>
+            </div>
+            <div class="version-badge">原心联创 · 实时档案</div>
+        </div>
+        <div class="search-body">
+            <div class="search-box">
+                <div class="search-input-wrapper">
+                    <i>🔍</i>
+                    <input type="text" id="uinInput" class="winui-input" placeholder="请输入迷你号 (例如: 1000)" autocomplete="off" inputmode="numeric">
+                </div>
+                <button class="winui-button winui-button-primary" id="searchBtn">查询账号</button>
+                <button class="winui-button winui-button-secondary" id="resetBtn">清空</button>
+            </div>
+            <div class="hint-text">⚡ 迷你世界·账号信息查询器 | 展示公开档案及IP归属地</div>
+        </div>
+    </div>
+
+    <!-- 结果卡片 -->
+    <div class="winui-card result-card">
+        <div class="result-header">
+            <h2>👤 账号档案 & IP 归属地</h2>
+            <div class="stat-badge" id="statInfo">等待查询</div>
+        </div>
+        <div id="resultContainer">
+            <div class="loading-box">
+                <div class="spinner"></div>
+                <p style="margin-top:12px;">输入迷你号，查询公开档案~</p>
+            </div>
+        </div>
+    </div>
+    <footer>原心联创 · 账号信息实时查询 (数据来源于公开接口)</footer>
+</div>
+
+<script>
+    const uinInput = document.getElementById('uinInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const resultContainer = document.getElementById('resultContainer');
+    const statInfo = document.getElementById('statInfo');
+
+    // 返回主页面按钮跳转逻辑
+    const homeBtn = document.getElementById('homeBtn');
+    if (homeBtn) {
+        homeBtn.addEventListener('click', () => {
+            window.location.href = 'https://www.yuanxin520.top';
+        });
+    }
+
+    const PROFILE_API = 'https://api.yuafeng.cn/API/ly/mini_cha.php?uin=';
+    const IP_API = 'https://api.yuafeng.cn/API/ly/mini_ip.php?uin=';
+
+    function showToast(message, isError = false) {
+        const existing = document.querySelector('.winui-toast');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.className = 'winui-toast';
+        toast.textContent = message;
+        if (isError) toast.style.background = "#c42b1ce6";
+        document.body.appendChild(toast);
+        setTimeout(() => toast.style.transform = "translateX(-50%) translateY(0px)", 10);
+        setTimeout(() => {
+            toast.style.opacity = "0";
+            toast.style.transform = "translateX(-50%) translateY(20px)";
+            setTimeout(() => toast.remove(), 250);
+        }, 2100);
+    }
+
+    function formatTimestamp(timestamp) {
+        if (!timestamp) return '未知';
+        const date = new Date(timestamp * 1000);
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+    }
+
+    function formatNumber(num) {
+        if (num === undefined || num === null) return '0';
+        return num.toLocaleString();
+    }
+
+    function cleanMoodText(text) {
+        if (!text) return '暂无签名';
+        let cleaned = text.replace(/#[bB]/g, '').replace(/#[lL]/g, '').replace(/#[cC][0-9A-Fa-f]{6}/g, '');
+        cleaned = cleaned.replace(/\s+/g, ' ').trim();
+        return cleaned || '暂无签名';
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, m => {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function renderProfile(data) {
+        const uin = data.uin || '--';
+        const name = data.name || '无名玩家';
+        const level = data.level ?? 0;
+        const avatar = data.avatar || 'https://image.mini1.cn/roleicon/0.png';
+        const lastLogin = formatTimestamp(data.last_login_time);
+        const gender = data.gender || '保密';
+        const friendNum = formatNumber(data.friend_num);
+        const followNum = formatNumber(data.follow_num);
+        const fansNum = formatNumber(data.fans_num);
+        const friendBeapply = formatNumber(data.friend_beapply);
+        const moodRaw = data.mood_text || '';
+        const mood = cleanMoodText(moodRaw);
+        const mapTotal = formatNumber(data.map_total_count);
+        const mapDownload = formatNumber(data.map_download_count);
+        const mapLike = formatNumber(data.map_like_count);
+        const mapVisit = formatNumber(data.map_visit_count);
+        const createTime = formatTimestamp(data.create_time);
+        const avatarFrameCount = data.avatar_frame_count ?? 0;
+        const popularity = formatNumber(data.popularity);
+
+        return `
+            <div class="profile-card">
+                <div class="profile-banner">
+                    <div class="avatar-area">
+                        <img class="player-avatar" src="${avatar}" alt="头像" onerror="this.src='https://image.mini1.cn/roleicon/0.png'">
+                    </div>
+                    <div class="player-name-box">
+                        <div class="player-name">${escapeHtml(name)}</div>
+                        <div class="player-uin">迷你号: ${uin}</div>
+                        <div style="margin-top:10px;"><span class="player-level">✨ Lv.${level}</span></div>
+                    </div>
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-icon">🎂</div>
+                        <div class="info-content">
+                            <div class="info-label">注册时间</div>
+                            <div class="info-value">${createTime}</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">📅</div>
+                        <div class="info-content">
+                            <div class="info-label">最后登录</div>
+                            <div class="info-value">${lastLogin}</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">🚻</div>
+                        <div class="info-content">
+                            <div class="info-label">性别</div>
+                            <div class="info-value">${escapeHtml(gender)}</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">👥</div>
+                        <div class="info-content">
+                            <div class="info-label">好友 / 关注 / 粉丝</div>
+                            <div class="info-value">${friendNum} / ${followNum} / ${fansNum}</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">💌</div>
+                        <div class="info-content">
+                            <div class="info-label">收到好友申请</div>
+                            <div class="info-value">${friendBeapply}</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">🔥</div>
+                        <div class="info-content">
+                            <div class="info-label">人气值</div>
+                            <div class="info-value">${popularity}</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">🖼️</div>
+                        <div class="info-content">
+                            <div class="info-label">头像框数量</div>
+                            <div class="info-value">${avatarFrameCount} 个</div>
+                        </div>
+                    </div>
+                    <div class="info-item mood-text">
+                        <div class="info-icon">💬</div>
+                        <div class="info-content">
+                            <div class="info-label">个人签名</div>
+                            <div class="info-value">“${escapeHtml(mood)}”</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">🗺️</div>
+                        <div class="info-content">
+                            <div class="info-label">地图总数</div>
+                            <div class="info-value">${mapTotal}</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">⬇️</div>
+                        <div class="info-content">
+                            <div class="info-label">地图总下载</div>
+                            <div class="info-value">${mapDownload}</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">❤️</div>
+                        <div class="info-content">
+                            <div class="info-label">地图获赞</div>
+                            <div class="info-value">${mapLike}</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">👀</div>
+                        <div class="info-content">
+                            <div class="info-label">地图访问量</div>
+                            <div class="info-value">${mapVisit}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderIpInfo(data) {
+        const uin = data.uin || '--';
+        const addr = data.addr || '未知';
+        const caddr = data.caddr || '未知';
+        return `
+            <div class="ip-card">
+                <div class="ip-header">
+                    <h3>
+                        <span>🌐</span> IP 归属地信息
+                    </h3>
+                </div>
+                <div class="ip-content">
+                    <div class="ip-info-item">
+                        <div class="ip-info-label">迷你号</div>
+                        <div class="ip-info-value">${escapeHtml(uin)}</div>
+                    </div>
+                    <div class="ip-info-item">
+                        <div class="ip-info-label">所属省份</div>
+                        <div class="ip-info-value">${escapeHtml(addr)}</div>
+                    </div>
+                    <div class="ip-info-item">
+                        <div class="ip-info-label">所属城市</div>
+                        <div class="ip-info-value">${escapeHtml(caddr)}</div>
+                    </div>
+                    <div class="ip-note">
+                        📍 基于账号IP地址定位，仅供参考
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderError(msg, detail = '') {
+        statInfo.innerHTML = '❌ 查询失败';
+        resultContainer.innerHTML = `
+            <div style="padding:24px 28px 32px;">
+                <div class="error-box">
+                    <div style="font-size:2rem; margin-bottom:12px;">⚠️</div>
+                    <div style="font-weight:500;">${escapeHtml(msg)}</div>
+                    <div style="font-size:0.8rem; margin-top:12px;">${escapeHtml(detail)}</div>
+                    <div style="font-size:0.7rem; margin-top:16px; color:#8fbba6;">请检查迷你号是否正确或稍后再试</div>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderLoading() {
+        statInfo.innerHTML = '🔄 查询中...';
+        resultContainer.innerHTML = `
+            <div style="padding:24px 28px 32px;">
+                <div class="loading-box">
+                    <div class="spinner"></div>
+                    <p style="margin-top:12px;">正在查询账号档案及IP归属地...</p>
+                </div>
+            </div>
+        `;
+    }
+
+    async function queryAccount() {
+        let rawUin = uinInput.value.trim();
+        if (rawUin === '') {
+            showToast('请输入迷你号', true);
+            return;
+        }
+        if (!/^\d+$/.test(rawUin)) {
+            showToast('迷你号必须是纯数字', true);
+            return;
+        }
+        renderLoading();
+
+        try {
+            const [profileResult, ipResult] = await Promise.allSettled([
+                fetch(PROFILE_API + rawUin).then(res => res.json()),
+                fetch(IP_API + rawUin).then(res => res.json())
+            ]);
+
+            let profileHtml = '';
+            let profileSuccess = false;
+            if (profileResult.status === 'fulfilled' && profileResult.value && profileResult.value.code === 0 && profileResult.value.data) {
+                profileHtml = renderProfile(profileResult.value.data);
+                profileSuccess = true;
+            } else {
+                let errorMsg = '账号档案获取失败';
+                if (profileResult.status === 'rejected') errorMsg = profileResult.reason?.message || '网络错误';
+                else if (profileResult.value?.msg) errorMsg = profileResult.value.msg;
+                profileHtml = `
+                    <div class="profile-card">
+                        <div class="ip-header" style="background: #fbe9e7;">
+                            <h3 style="color:#c23b22;">❌ 账号档案查询失败</h3>
+                        </div>
+                        <div class="ip-content">
+                            <div class="ip-info-item">
+                                <div class="ip-info-value" style="color:#b3442c;">${escapeHtml(errorMsg)}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            let ipHtml = '';
+            let ipSuccess = false;
+            if (ipResult.status === 'fulfilled' && ipResult.value && ipResult.value.code === 0 && ipResult.value.data) {
+                ipHtml = renderIpInfo(ipResult.value.data);
+                ipSuccess = true;
+            } else {
+                let errorMsg = 'IP归属地获取失败';
+                if (ipResult.status === 'rejected') errorMsg = ipResult.reason?.message || '网络错误';
+                else if (ipResult.value?.msg) errorMsg = ipResult.value.msg;
+                ipHtml = `
+                    <div class="ip-card">
+                        <div class="ip-header" style="background: #fbe9e7;">
+                            <h3 style="color:#c23b22;">❌ IP归属地查询失败</h3>
+                        </div>
+                        <div class="ip-content">
+                            <div class="ip-info-item">
+                                <div class="ip-info-value" style="color:#b3442c;">${escapeHtml(errorMsg)}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            const finalHtml = `
+                <div class="results-grid">
+                    ${profileHtml}
+                    ${ipHtml}
+                </div>
+            `;
+            resultContainer.innerHTML = finalHtml;
+
+            if (profileSuccess && ipSuccess) {
+                statInfo.innerHTML = '✅ 查询成功（档案 + IP归属地）';
+                showToast('查询成功');
+            } else if (profileSuccess || ipSuccess) {
+                statInfo.innerHTML = '⚠️ 部分查询成功';
+                showToast('部分数据获取失败', true);
+            } else {
+                statInfo.innerHTML = '❌ 查询失败';
+                showToast('所有接口均获取失败', true);
+            }
+        } catch (err) {
+            console.error(err);
+            renderError('网络错误或接口不可用', err.message || '请检查网络连接后重试');
+            showToast('查询失败', true);
+        }
+    }
+
+    function resetQuery() {
+        uinInput.value = '';
+        statInfo.innerHTML = '等待查询';
+        resultContainer.innerHTML = `
+            <div style="padding:24px 28px 32px;">
+                <div class="loading-box">
+                    <div class="spinner"></div>
+                    <p style="margin-top:12px;">输入迷你号，查询公开档案及IP归属地~</p>
+                </div>
+            </div>
+        `;
+    }
+
+    searchBtn.addEventListener('click', queryAccount);
+    resetBtn.addEventListener('click', resetQuery);
+    uinInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') queryAccount();
+    });
+</script>
+</body>
+</html>

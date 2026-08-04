@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>迷你世界物品ID查询器 - 原心联创</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #d4efe3 0%, #b8d9c8 100%);
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 24px;
+            min-height: 100vh;
+            animation: bgShift 12s ease-in-out infinite alternate;
+        }
+
+        @keyframes bgShift {
+            0% { background: linear-gradient(145deg, #d4efe3 0%, #b8d9c8 100%); }
+            100% { background: linear-gradient(135deg, #cbe8dd 0%, #a6cebc 100%); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 32px;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(2px);
+            overflow: hidden;
+            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1), box-shadow 0.3s ease;
+            animation: cardAppear 0.5s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @keyframes cardAppear {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .search-card {
+            margin-bottom: 32px;
+            animation-delay: 0.05s;
+        }
+
+        .result-card {
+            animation-delay: 0.1s;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 28px 40px -16px rgba(0, 0, 0, 0.25);
+        }
+
+        .search-header {
+            background: linear-gradient(120deg, #2a7f55, #1d5e3f);
+            padding: 20px 28px;
+            color: white;
+        }
+
+        .search-header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .version {
+            font-size: 0.75rem;
+            background: rgba(255, 255, 220, 0.25);
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-weight: normal;
+            transition: transform 0.2s;
+        }
+
+        .version:hover {
+            transform: scale(1.02);
+        }
+
+        .search-body {
+            padding: 24px 28px;
+        }
+
+        .search-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 4;
+            min-width: 220px;
+            padding: 14px 20px;
+            border: 2px solid #cde0d6;
+            border-radius: 60px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            background: white;
+        }
+
+        .search-input:focus {
+            border-color: #2a7f55;
+            box-shadow: 0 0 0 4px rgba(42, 127, 85, 0.15);
+            transform: scale(1.01);
+        }
+
+        .btn {
+            padding: 0 28px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            background: #2a7f55;
+            color: white;
+            height: 52px;
+        }
+
+        .btn-outline {
+            background: #eef5f1;
+            color: #1d5e3f;
+            border: 1px solid #c2dfd0;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+            background: #1d5e3f;
+        }
+
+        .btn:active {
+            transform: translateY(1px) scale(0.98);
+        }
+
+        .btn-outline:hover {
+            background: #e0f0e8;
+            color: #0e442f;
+        }
+
+        .result-header {
+            padding: 18px 28px;
+            background: #fafff8;
+            border-bottom: 2px solid #e2f0e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .result-header h2 {
+            font-size: 1.2rem;
+            color: #1a5a3c;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stats {
+            background: #e9f3ed;
+            padding: 6px 20px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #1a5a3c;
+            transition: all 0.2s;
+        }
+
+        .stats:hover {
+            transform: scale(1.02);
+            background: #ddeee4;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            padding: 0 20px 20px;
+            transition: opacity 0.2s ease;
+        }
+
+        .item-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 720px;
+        }
+
+        .item-table th {
+            text-align: left;
+            padding: 16px 12px;
+            background: #f4fbf7;
+            color: #1e5c3e;
+            font-weight: 600;
+            border-bottom: 2px solid #d4e8dd;
+        }
+
+        .item-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #e4f0e8;
+            color: #2a4a38;
+            vertical-align: middle;
+        }
+
+        .item-table tr:hover td {
+            background: #fafff8;
+            box-shadow: inset 0 0 0 1px #cce6db;
+        }
+
+        .id-badge {
+            background: #e5f0ea;
+            font-family: monospace;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            display: inline-block;
+            color: #1c6b48;
+            transition: all 0.2s;
+        }
+
+        .id-badge:hover {
+            background: #d0e6dc;
+            transform: scale(1.02);
+        }
+
+        .type-badge {
+            background: #eef2fc;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            color: #2c6280;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+
+        .type-badge:hover {
+            background: #e2eaf8;
+            transform: translateY(-1px);
+        }
+
+        .copy-btn {
+            background: white;
+            border: 1px solid #c5e0d4;
+            border-radius: 30px;
+            padding: 5px 16px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #2a7f55;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+
+        .copy-btn:hover {
+            background: #2a7f55;
+            color: white;
+            border-color: #2a7f55;
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 4px 10px rgba(42, 127, 85, 0.25);
+        }
+
+        .copy-btn:active {
+            transform: translateY(1px) scale(0.97);
+        }
+
+        .desc-cell {
+            max-width: 300px;
+            color: #5b7a68;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        .icon-container {
+            position: relative;
+            width: 36px;
+            height: 36px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .item-icon {
+            max-width: 36px;
+            max-height: 36px;
+            object-fit: contain;
+            transition: transform 0.2s;
+        }
+
+        .item-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .icon-placeholder {
+            width: 36px;
+            height: 36px;
+            background: #eef4f0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #8fbbaa;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            padding: 20px 20px 28px;
+            border-top: 1px solid #e2efe6;
+            background: #fefef9;
+        }
+
+        .pagination button {
+            background: white;
+            border: 1px solid #cde0d4;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.2);
+            color: #2a7f55;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: #e2f3ea;
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .pagination button:active:not(:disabled) {
+            transform: translateY(1px) scale(0.98);
+        }
+
+        .pagination button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .page-jump {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .page-jump input {
+            width: 65px;
+            padding: 6px;
+            text-align: center;
+            border: 1px solid #cde0d4;
+            border-radius: 40px;
+            transition: all 0.2s;
+        }
+
+        .page-jump input:focus {
+            border-color: #2a7f55;
+            outline: none;
+            transform: scale(1.02);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #2a7f55;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            border: 3px solid #d4e6dd;
+            border-top-color: #2a7f55;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #6c927e;
+            margin-top: 20px;
+            animation: fadeInUp 0.5s ease-out 0.2s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 780px) {
+            body { padding: 16px; }
+            .search-header h1 { font-size: 1.3rem; }
+            .search-body, .result-header, .table-wrapper { padding-left: 16px; padding-right: 16px; }
+            .desc-cell { max-width: 150px; }
+            .stats { white-space: normal; font-size: 0.7rem; }
+            .btn { padding: 0 20px; height: 48px; }
+            .icon-container, .item-icon, .icon-placeholder { width: 28px; height: 28px; font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card search-card">
+        <div class="search-header">
+            <h1>
+                迷你世界物品ID查询器
+                <span class="version">原心联创提供技术服务</span>
+            </h1>
+        </div>
+        <div class="search-body">
+            <div class="search-box">
+                <input type="text" id="searchInput" class="search-input" placeholder="输入物品名称或ID" autocomplete="off">
+                <button class="btn" id="searchBtn">查询</button>
+                <button class="btn btn-outline" id="resetBtn">重置</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card result-card">
+        <div class="result-header">
+            <h2>📋 物品列表 <span style="font-size:0.7rem;"> 点击「复制ID」一键获取</span></h2>
+            <div class="stats" id="statInfo">加载数据中...</div>
+        </div>
+        <div class="table-wrapper" id="tableWrapper">
+            <table class="item-table">
+                <thead>
+                    <tr><th>图标</th><th>物品名称</th><th>物品ID</th><th>类别</th><th>描述/说明</th><th>操作</th></tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr><td colspan="6" class="loading"><div class="spinner"></div> 正在同步云端物品库...<\/td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="pagination" class="pagination"></div>
+    </div>
+    <footer>原心联创 保留所有权利 | 图标优先显示真实图片，不存在则显示问号</footer>
+</div>
+
+<script>
+    let fullItems = [];
+    let currentItems = [];
+    let currentPage = 1;
+    const pageSize = 20;
+    let searchKeyword = "";
+    let isLoading = true;
+
+    const searchInput = document.getElementById("searchInput");
+    const searchBtn = document.getElementById("searchBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const tableBody = document.getElementById("tableBody");
+    const paginationDiv = document.getElementById("pagination");
+    const statInfo = document.getElementById("statInfo");
+    const tableWrapper = document.getElementById("tableWrapper");
+
+    function showToast(message, isError = false) {
+        const toast = document.createElement("div");
+        toast.textContent = message;
+        toast.style.position = "fixed";
+        toast.style.bottom = "30px";
+        toast.style.left = "50%";
+        toast.style.transform = "translateX(-50%)";
+        toast.style.backgroundColor = isError ? "#c23b22" : "#1e3a2f";
+        toast.style.color = "white";
+        toast.style.padding = "10px 24px";
+        toast.style.borderRadius = "60px";
+        toast.style.fontSize = "0.9rem";
+        toast.style.zIndex = "9999";
+        toast.style.backdropFilter = "blur(8px)";
+        toast.style.boxShadow = "0 8px 18px rgba(0,0,0,0.15)";
+        toast.style.opacity = "0";
+        toast.style.transition = "opacity 0.2s";
+        document.body.appendChild(toast);
+        setTimeout(() => toast.style.opacity = "1", 10);
+        setTimeout(() => {
+            toast.style.opacity = "0";
+            setTimeout(() => toast.remove(), 300);
+        }, 2000);
+    }
+
+    async function copyId(id, name) {
+        try {
+            if (navigator.clipboard && window.isSecureContext !== false) {
+                await navigator.clipboard.writeText(String(id));
+                showToast(`✅ 已复制 [${name}] 的ID: ${id}`);
+                return;
+            }
+            const textarea = document.createElement("textarea");
+            textarea.value = String(id);
+            textarea.style.position = "fixed";
+            textarea.style.top = "-1000px";
+            document.body.appendChild(textarea);
+            textarea.select();
+            const success = document.execCommand("copy");
+            document.body.removeChild(textarea);
+            if (success) showToast(`✅ 已复制 [${name}] 的ID: ${id}`);
+            else throw new Error();
+        } catch (e) {
+            showToast(`❌ 复制失败，请手动复制 ID: ${id}`, true);
+        }
+    }
+
+    function parseData(rawText) {
+        const items = [];
+        const regex = /\{([^}]+)\}/g;
+        let match;
+        while ((match = regex.exec(rawText)) !== null) {
+            const inner = match[1];
+            let firstComma = inner.indexOf(",");
+            if (firstComma === -1) continue;
+            let secondComma = inner.indexOf(",", firstComma + 1);
+            if (secondComma === -1) continue;
+            let thirdComma = inner.indexOf(",", secondComma + 1);
+            if (thirdComma === -1) continue;
+
+            const idStr = inner.substring(0, firstComma).trim();
+            const name = inner.substring(firstComma + 1, secondComma).trim();
+            const category = inner.substring(secondComma + 1, thirdComma).trim();
+            let desc = inner.substring(thirdComma + 1).trim();
+            desc = desc.replace(/^"|"$/g, "").replace(/\\n/g, " ");
+
+            const idNum = parseInt(idStr, 10);
+            if (!isNaN(idNum) && name) {
+                items.push({
+                    id: idNum,
+                    name: name,
+                    type: category || "道具",
+                    desc: desc || "暂无描述"
+                });
+            }
+        }
+        const uniqueMap = new Map();
+        for (const it of items) {
+            const key = `${it.id}_${it.name}`;
+            if (!uniqueMap.has(key)) uniqueMap.set(key, it);
+        }
+        const unique = Array.from(uniqueMap.values());
+        unique.sort((a, b) => a.id - b.id);
+        return unique;
+    }
+
+    async function loadData() {
+        isLoading = true;
+        renderLoading();
+        const sources = [
+            "https://tuanmengqiu.cn/kfz/cxid/id.txt",
+            "https://api.yuanxin520.top/api/id/id.txt"
+        ];
+        for (const url of sources) {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                const response = await fetch(url, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const text = await response.text();
+                const parsed = parseData(text);
+                if (parsed.length > 0) {
+                    fullItems = parsed;
+                    currentItems = [...fullItems];
+                    searchKeyword = "";
+                    currentPage = 1;
+                    isLoading = false;
+                    renderTable();
+                    renderPagination();
+                    updateStat();
+                    return;
+                }
+            } catch (err) {
+                console.warn(`数据源 ${url} 失败:`, err);
+            }
+        }
+        isLoading = false;
+        tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:40px;">⚠️ 加载失败，请检查网络后刷新页面</td></tr>`;
+        statInfo.innerHTML = "❌ 加载失败";
+        paginationDiv.innerHTML = "";
+        showToast("数据加载失败，请稍后重试", true);
+    }
+
+    function renderLoading() {
+        tableBody.innerHTML = `<tr><td colspan="6" class="loading"><div class="spinner"></div> 正在同步云端物品库...</td></tr>`;
+        paginationDiv.innerHTML = "";
+        statInfo.innerHTML = "📡 连接云端...";
+    }
+
+    async function fadeRender(renderFn) {
+        if (isLoading) return;
+        tableWrapper.style.transition = "opacity 0.2s ease";
+        tableWrapper.style.opacity = "0.6";
+        await new Promise(r => setTimeout(r, 70));
+        renderFn();
+        tableWrapper.style.opacity = "1";
+        setTimeout(() => tableWrapper.style.transition = "", 200);
+    }
+
+    // 智能图标：尝试多个后缀和备用域名，全部失败后才显示问号
+    function createIconElement(itemId, itemName) {
+        const container = document.createElement('div');
+        container.className = 'icon-container';
+        
+        const placeholder = document.createElement('div');
+        placeholder.className = 'icon-placeholder';
+        placeholder.textContent = '?';
+        placeholder.style.display = 'flex';
+        
+        const img = document.createElement('img');
+        img.className = 'item-icon';
+        img.alt = `${itemName}图标`;
+        img.style.display = 'none';
+        
+        container.appendChild(placeholder);
+        container.appendChild(img);
+        
+        // 尝试加载图片的辅助函数
+        const tryLoad = (urls, index = 0) => {
+            if (index >= urls.length) {
+                // 所有尝试都失败，保留问号占位符，隐藏图片
+                img.style.display = 'none';
+                placeholder.style.display = 'flex';
+                return;
+            }
+            img.src = urls[index];
+            img.onload = () => {
+                // 加载成功，显示图片，隐藏占位符
+                img.style.display = 'block';
+                placeholder.style.display = 'none';
+            };
+            img.onerror = () => {
+                // 失败，尝试下一个URL
+                tryLoad(urls, index + 1);
+            };
+        };
+        
+        // 定义多个可能的图标地址（域名 + 后缀组合）
+        const baseUrls = [
+            `https://tuanmengqiu.cn/kfz/cxid/ico/${itemId}.png`,
+            `https://tuanmengqiu.cn/kfz/cxid/ico/${itemId}.jpg`,
+            `https://api.yuanxin520.top/api/id/ico/${itemId}.png`,
+            `https://api.yuanxin520.top/api/id/ico/${itemId}.jpg`
+        ];
+        tryLoad(baseUrls);
+        
+        return container;
+    }
+
+    function renderTable() {
+        if (isLoading) return;
+        const start = (currentPage - 1) * pageSize;
+        const pageItems = currentItems.slice(start, start + pageSize);
+        if (pageItems.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:40px;">✨ 没有找到相关物品，试试其他关键词 ✨</td></tr>`;
+            return;
+        }
+        tableBody.innerHTML = '';
+        for (const item of pageItems) {
+            const row = document.createElement('tr');
+            
+            // 图标单元格
+            const iconCell = document.createElement('td');
+            iconCell.style.textAlign = 'center';
+            const iconElement = createIconElement(item.id, item.name);
+            iconCell.appendChild(iconElement);
+            
+            // 名称单元格
+            const nameCell = document.createElement('td');
+            nameCell.style.fontWeight = '500';
+            nameCell.textContent = item.name;
+            
+            // ID单元格
+            const idCell = document.createElement('td');
+            const idBadge = document.createElement('span');
+            idBadge.className = 'id-badge';
+            idBadge.textContent = item.id;
+            idCell.appendChild(idBadge);
+            
+            // 类别单元格
+            const typeCell = document.createElement('td');
+            const typeBadge = document.createElement('span');
+            typeBadge.className = 'type-badge';
+            typeBadge.textContent = item.type;
+            typeCell.appendChild(typeBadge);
+            
+            // 描述单元格
+            const descCell = document.createElement('td');
+            descCell.className = 'desc-cell';
+            const cleanDesc = truncateDesc(item.desc, 70);
+            descCell.textContent = cleanDesc;
+            descCell.title = item.desc;
+            
+            // 操作单元格
+            const actionCell = document.createElement('td');
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'copy-btn';
+            copyBtn.textContent = '📋 复制ID';
+            copyBtn.dataset.id = item.id;
+            copyBtn.dataset.name = item.name;
+            copyBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                copyId(item.id, item.name);
+            });
+            actionCell.appendChild(copyBtn);
+            
+            row.appendChild(iconCell);
+            row.appendChild(nameCell);
+            row.appendChild(idCell);
+            row.appendChild(typeCell);
+            row.appendChild(descCell);
+            row.appendChild(actionCell);
+            tableBody.appendChild(row);
+        }
+    }
+
+    function renderPagination() {
+        if (isLoading) {
+            paginationDiv.innerHTML = "";
+            return;
+        }
+        const total = currentItems.length;
+        const totalPages = Math.ceil(total / pageSize);
+        if (totalPages <= 1 && total <= pageSize) {
+            paginationDiv.innerHTML = `<span style="color:#6f9c87;">共 ${total} 条记录</span>`;
+            return;
+        }
+        let paginHtml = `
+            <button id="prevPageBtn" ${currentPage === 1 ? "disabled" : ""}>◀ 上一页</button>
+            <span>第 ${currentPage} / ${totalPages} 页</span>
+            <button id="nextPageBtn" ${currentPage === totalPages ? "disabled" : ""}>下一页 ▶</button>
+            <div class="page-jump">
+                <span>跳转</span>
+                <input type="number" id="jumpInput" min="1" max="${totalPages}" value="${currentPage}">
+                <button id="jumpBtn">GO</button>
+            </div>
+            <span style="margin-left:8px;">共 ${total} 项</span>
+        `;
+        paginationDiv.innerHTML = paginHtml;
+
+        document.getElementById("prevPageBtn")?.addEventListener("click", () => {
+            if (currentPage > 1) {
+                currentPage--;
+                fadeRender(() => { renderTable(); renderPagination(); });
+            }
+        });
+        document.getElementById("nextPageBtn")?.addEventListener("click", () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                fadeRender(() => { renderTable(); renderPagination(); });
+            }
+        });
+        const jumpBtn = document.getElementById("jumpBtn");
+        const jumpInput = document.getElementById("jumpInput");
+        if (jumpBtn) {
+            jumpBtn.addEventListener("click", () => {
+                let target = parseInt(jumpInput.value);
+                if (isNaN(target)) target = 1;
+                target = Math.min(totalPages, Math.max(1, target));
+                if (target !== currentPage) {
+                    currentPage = target;
+                    fadeRender(() => { renderTable(); renderPagination(); });
+                }
+                jumpInput.value = target;
+            });
+        }
+    }
+
+    function updateStat() {
+        if (isLoading) {
+            statInfo.innerHTML = "同步物品库...";
+            return;
+        }
+        const total = currentItems.length;
+        const all = fullItems.length;
+        if (searchKeyword) {
+            statInfo.innerHTML = `🔍 找到 ${total} 个物品 (共 ${all} 件)`;
+        } else {
+            statInfo.innerHTML = `共索引到 ${all} 件物品 (实时同步)`;
+        }
+    }
+
+    function filterItems() {
+        if (isLoading) return;
+        const keyword = searchInput.value.trim().toLowerCase();
+        searchKeyword = keyword;
+        if (keyword === "") {
+            currentItems = [...fullItems];
+        } else {
+            currentItems = fullItems.filter(item =>
+                item.name.toLowerCase().includes(keyword) ||
+                String(item.id).includes(keyword)
+            );
+        }
+        currentPage = 1;
+        fadeRender(() => {
+            renderTable();
+            renderPagination();
+            updateStat();
+        });
+    }
+
+    function resetSearch() {
+        if (isLoading) return;
+        searchInput.value = "";
+        searchKeyword = "";
+        currentItems = [...fullItems];
+        currentPage = 1;
+        fadeRender(() => {
+            renderTable();
+            renderPagination();
+            updateStat();
+        });
+    }
+
+    function truncateDesc(desc, maxLen) {
+        if (!desc) return "";
+        let clean = desc.replace(/#c0aba1d|#n|@item_\d+#/g, "");
+        if (clean.length > maxLen) return clean.slice(0, maxLen) + "...";
+        return clean;
+    }
+
+    function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>]/g, m => {
+            if (m === "&") return "&amp;";
+            if (m === "<") return "&lt;";
+            if (m === ">") return "&gt;";
+            return m;
+        });
+    }
+
+    searchBtn.addEventListener("click", filterItems);
+    resetBtn.addEventListener("click", resetSearch);
+    searchInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") filterItems();
+    });
+
+    loadData();
+</script>
+</body>
+</html>

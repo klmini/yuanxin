@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>迷你世界物品ID查询器 - WinUI 3 风格 | 原心联创</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* WinUI 3 灵感 - Fluent Design System */
+        body {
+            background: #f0f2f4;  /* 柔和系统背景 */
+            font-family: 'Segoe UI Variable', 'Segoe UI', 'Segoe UI Display', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 32px 24px;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* 模拟 Mica / Acrylic 效果 (类似亚克力背景) */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 10% 20%, rgba(255, 255, 245, 0.4), rgba(235, 240, 245, 0.6));
+            backdrop-filter: blur(80px);
+            z-index: -2;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" opacity="0.1"><path fill="none" d="M0 0h800v800H0z"/><path fill="%23007acc" d="M400 100L500 200 400 300 300 200zM200 300L300 400 200 500 100 400zM600 300L700 400 600 500 500 400zM400 500L500 600 400 700 300 600z"/></svg>');
+            background-repeat: repeat;
+            background-size: 60px;
+            opacity: 0.08;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* 主应用容器 - 类似 WinUI 的 ContentDialog / 主窗口圆角卡片 */
+        .winui-app {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08), 0 0 0 0.5px rgba(0, 0, 0, 0.02), 0 12px 24px -8px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s;
+        }
+
+        /* 标题栏区域 (WinUI 风格 标题栏) - 移除了窗口控制按钮 */
+        .app-titlebar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 28px;
+            background: rgba(248, 250, 252, 0.7);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(10px);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .title-area {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .title-area h1 {
+            font-size: 1.65rem;
+            font-weight: 600;
+            background: linear-gradient(115deg, #1c5c3e, #2e7d5a);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+        }
+
+        .version-badge {
+            background: rgba(0, 114, 206, 0.12);
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #1a6d4c;
+            backdrop-filter: blur(4px);
+            border: 0.5px solid rgba(0,0,0,0.05);
+        }
+
+        /* 返回主页面按钮 - WinUI 风格圆角 */
+        .home-nav-btn {
+            background: rgba(0, 120, 212, 0.08);
+            border: 0.5px solid rgba(0, 120, 212, 0.25);
+            color: #106ebe;
+            font-weight: 500;
+            padding: 0 22px;
+            height: 38px;
+            font-size: 0.8rem;
+            border-radius: 40px;
+            backdrop-filter: blur(4px);
+            transition: all 0.18s cubic-bezier(0.2, 0.9, 0.4, 1.2);
+            cursor: pointer;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .home-nav-btn:hover {
+            background: rgba(0, 120, 212, 0.15);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0, 120, 212, 0.2);
+            border-color: #0078d4;
+        }
+        .home-nav-btn:active {
+            transform: translateY(1px);
+        }
+
+        /* 搜索区 - WinUI 命令栏风格 */
+        .command-bar {
+            padding: 20px 28px 12px 28px;
+            background: transparent;
+        }
+
+        .search-panel {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .search-box-wrapper {
+            flex: 4;
+            min-width: 220px;
+            position: relative;
+        }
+
+        .search-box-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-style: normal;
+            font-weight: 500;
+            color: #9aa2a6;
+            pointer-events: none;
+            font-size: 1rem;
+        }
+
+        .winui-input {
+            width: 100%;
+            padding: 11px 18px 11px 44px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 40px;
+            background: #fcfcfd;
+            outline: none;
+            transition: all 0.15s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            font-family: inherit;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
+        }
+
+        .winui-input:focus {
+            border-color: #0078d4;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.15);
+        }
+
+        .winui-button {
+            background: #ffffff;
+            border: 0.5px solid rgba(0, 0, 0, 0.12);
+            padding: 0 28px;
+            height: 48px;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.12s ease;
+            color: #1c1e21;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.02);
+            backdrop-filter: blur(4px);
+        }
+
+        .winui-button-primary {
+            background: #0078d4;
+            border: none;
+            color: white;
+            box-shadow: 0 2px 3px rgba(0, 120, 212, 0.2);
+        }
+
+        .winui-button-primary:hover {
+            background: #106ebe;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 120, 212, 0.2);
+        }
+
+        .winui-button-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-1px);
+            border-color: rgba(0,0,0,0.15);
+        }
+
+        .winui-button:active {
+            transform: translateY(1px);
+        }
+
+        /* 统计栏和信息 */
+        .info-bar {
+            padding: 6px 28px 0 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 0.8rem;
+            color: #5f6368;
+        }
+
+        .stat-modern {
+            background: rgba(0,0,0,0.03);
+            padding: 6px 16px;
+            border-radius: 40px;
+            backdrop-filter: blur(5px);
+            font-weight: 450;
+        }
+
+        /* 表格容器 - 类DataGrid风格 */
+        .datagrid-container {
+            padding: 8px 20px 16px 20px;
+            overflow-x: auto;
+            transition: opacity 0.2s;
+        }
+
+        .item-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .item-table th {
+            text-align: left;
+            padding: 14px 12px;
+            background: rgba(0, 0, 0, 0.02);
+            font-weight: 600;
+            color: #202124;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            font-size: 0.8rem;
+            letter-spacing: 0.3px;
+        }
+
+        .item-table td {
+            padding: 13px 12px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            color: #2c3e34;
+            vertical-align: middle;
+        }
+
+        .item-table tr:hover td {
+            background: rgba(0, 120, 212, 0.04);
+        }
+
+        /* 徽章样式 (ID + 类型) */
+        .id-badge {
+            background: #eef2f9;
+            font-family: 'Cascadia Mono', 'JetBrains Mono', monospace;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            display: inline-block;
+            color: #106ebe;
+            transition: all 0.1s;
+        }
+
+        .type-badge {
+            background: #f0f2f4;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #4b5563;
+            display: inline-block;
+        }
+
+        .desc-cell {
+            max-width: 260px;
+            color: #5c6c66;
+            font-size: 0.8rem;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+
+        /* 复制按钮 WinUI 风格 */
+        .copy-btn {
+            background: transparent;
+            border: 0.5px solid rgba(0, 0, 0, 0.15);
+            border-radius: 40px;
+            padding: 5px 16px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #2c6e5e;
+            cursor: pointer;
+            transition: all 0.18s cubic-bezier(0.2, 0.9, 0.4, 1.2);
+            font-family: inherit;
+        }
+
+        .copy-btn:hover {
+            background: #eef2fa;
+            border-color: #0078d4;
+            color: #0078d4;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0, 120, 212, 0.12);
+        }
+
+        /* 图标单元格 */
+        .icon-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 38px;
+            height: 38px;
+        }
+        .item-icon {
+            max-width: 32px;
+            max-height: 32px;
+            object-fit: contain;
+            border-radius: 6px;
+        }
+        .icon-placeholder {
+            width: 32px;
+            height: 32px;
+            background: #f1f3f5;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #8a9b8f;
+            font-size: 16px;
+        }
+
+        /* 分页栏 WinUI 风格 */
+        .pagination-modern {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            padding: 20px 24px 28px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .pagination-modern button {
+            background: white;
+            border: 0.5px solid rgba(0, 0, 0, 0.12);
+            padding: 6px 20px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.12s;
+            font-family: inherit;
+            font-size: 0.8rem;
+        }
+
+        .pagination-modern button:hover:not(:disabled) {
+            background: #f0f4fa;
+            border-color: #ccc;
+            transform: translateY(-1px);
+        }
+
+        .pagination-modern button:disabled {
+            opacity: 0.45;
+            cursor: default;
+        }
+
+        .page-jump {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0,0,0,0.02);
+            padding: 4px 12px;
+            border-radius: 40px;
+        }
+
+        .page-jump input {
+            width: 62px;
+            padding: 6px;
+            text-align: center;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 32px;
+            font-family: monospace;
+            transition: 0.1s;
+        }
+        .page-jump input:focus {
+            border-color: #0078d4;
+            outline: none;
+        }
+
+        .footer-copyright {
+            text-align: center;
+            padding: 14px 24px;
+            font-size: 0.7rem;
+            color: #7c8b84;
+            border-top: 1px solid rgba(0,0,0,0.03);
+            background: rgba(252, 252, 252, 0.5);
+        }
+
+        /* 加载与动画 */
+        .loading-cell {
+            text-align: center;
+            padding: 60px;
+            color: #4a6b5c;
+        }
+        .spinner {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            border: 2.5px solid rgba(0, 120, 212, 0.2);
+            border-top-color: #0078d4;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            vertical-align: middle;
+            margin-right: 12px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* 响应式调整 */
+        @media (max-width: 780px) {
+            body { padding: 16px; }
+            .app-titlebar { padding: 10px 18px; flex-wrap: wrap; }
+            .title-area h1 { font-size: 1.35rem; }
+            .command-bar, .info-bar, .datagrid-container { padding-left: 16px; padding-right: 16px; }
+            .desc-cell { max-width: 140px; }
+            .winui-button { padding: 0 18px; height: 44px; }
+            .home-nav-btn { padding: 0 16px; height: 34px; font-size: 0.75rem; }
+        }
+
+        /* Toast 通知 WinUI 风格 */
+        .winui-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #202020e6;
+            backdrop-filter: blur(40px);
+            color: white;
+            padding: 10px 24px;
+            border-radius: 60px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            z-index: 10000;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            transition: all 0.2s ease;
+            border: 0.5px solid rgba(255,255,255,0.2);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+<div class="winui-app">
+    <!-- WinUI 风格标题栏 - 已移除窗口控制按钮（─ □ ✕） -->
+    <div class="app-titlebar">
+        <div class="title-area">
+            <!-- 返回主页面按钮（圆角，跳转官网） -->
+            <button class="home-nav-btn" id="homeBtn">🏠 返回主页面</button>
+            <h1>迷你世界物品ID查询器</h1>
+            <span class="version-badge">原心联创 · 实时同步</span>
+        </div>
+        <!-- 不再显示任何窗口控制按钮 -->
+    </div>
+
+    <!-- 命令栏区域 (搜索) -->
+    <div class="command-bar">
+        <div class="search-panel">
+            <div class="search-box-wrapper">
+                <i>🔍</i>
+                <input type="text" id="searchInput" class="winui-input" placeholder="搜索物品名称或数字ID" autocomplete="off">
+            </div>
+            <button class="winui-button winui-button-primary" id="searchBtn">查询</button>
+            <button class="winui-button winui-button-secondary" id="resetBtn">重置</button>
+        </div>
+    </div>
+
+    <!-- 统计栏 -->
+    <div class="info-bar">
+        <div class="stat-modern" id="statInfo">⚡ 加载物品库...</div>
+        <div style="font-size:0.7rem;">💡 点击「复制ID」一键获取</div>
+    </div>
+
+    <!-- 表格区域 -->
+    <div class="datagrid-container" id="tableWrapper">
+        <table class="item-table">
+            <thead>
+                <tr><th style="width:60px">图标</th><th>物品名称</th><th>物品ID</th><th>类别</th><th>描述</th><th style="width:100px">操作</th></tr>
+            </thead>
+            <tbody id="tableBody">
+                <tr><td colspan="6" class="loading-cell"><div class="spinner"></div> 正在从云端同步物品数据...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 分页 -->
+    <div id="pagination" class="pagination-modern"></div>
+    <div class="footer-copyright">
+        原心联创 保留所有权利 · 图标智能匹配，多源保障
+    </div>
+</div>
+
+<script>
+    // ======================= 核心功能 (保留所有原始逻辑，仅移除窗口控件并添加主页跳转) =======================
+    let fullItems = [];
+    let currentItems = [];
+    let currentPage = 1;
+    const pageSize = 20;
+    let searchKeyword = "";
+    let isLoading = true;
+
+    const searchInput = document.getElementById("searchInput");
+    const searchBtn = document.getElementById("searchBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const tableBody = document.getElementById("tableBody");
+    const paginationDiv = document.getElementById("pagination");
+    const statInfo = document.getElementById("statInfo");
+    const tableWrapper = document.getElementById("tableWrapper");
+
+    // 返回主页面按钮跳转逻辑
+    const homeBtn = document.getElementById("homeBtn");
+    if (homeBtn) {
+        homeBtn.addEventListener("click", () => {
+            window.location.href = "https://www.yuanxin520.top";
+        });
+    }
+
+    // WinUI 风格 toast
+    function showToast(message, isError = false) {
+        const existingToast = document.querySelector('.winui-toast');
+        if(existingToast) existingToast.remove();
+        const toast = document.createElement("div");
+        toast.className = "winui-toast";
+        toast.textContent = message;
+        if(isError) toast.style.background = "#c42b1ce6";
+        document.body.appendChild(toast);
+        setTimeout(() => toast.style.transform = "translateX(-50%) translateY(0px)", 10);
+        setTimeout(() => {
+            toast.style.opacity = "0";
+            toast.style.transform = "translateX(-50%) translateY(20px)";
+            setTimeout(() => toast.remove(), 300);
+        }, 2200);
+    }
+
+    async function copyId(id, name) {
+        try {
+            if (navigator.clipboard && window.isSecureContext !== false) {
+                await navigator.clipboard.writeText(String(id));
+                showToast(`✅ 已复制 [${name}] 的ID: ${id}`);
+                return;
+            }
+            const textarea = document.createElement("textarea");
+            textarea.value = String(id);
+            textarea.style.position = "fixed";
+            textarea.style.top = "-1000px";
+            document.body.appendChild(textarea);
+            textarea.select();
+            const success = document.execCommand("copy");
+            document.body.removeChild(textarea);
+            if (success) showToast(`✅ 已复制 [${name}] 的ID: ${id}`);
+            else throw new Error();
+        } catch (e) {
+            showToast(`❌ 复制失败，请手动复制 ID: ${id}`, true);
+        }
+    }
+
+    function parseData(rawText) {
+        const items = [];
+        const regex = /\{([^}]+)\}/g;
+        let match;
+        while ((match = regex.exec(rawText)) !== null) {
+            const inner = match[1];
+            let firstComma = inner.indexOf(",");
+            if (firstComma === -1) continue;
+            let secondComma = inner.indexOf(",", firstComma + 1);
+            if (secondComma === -1) continue;
+            let thirdComma = inner.indexOf(",", secondComma + 1);
+            if (thirdComma === -1) continue;
+
+            const idStr = inner.substring(0, firstComma).trim();
+            const name = inner.substring(firstComma + 1, secondComma).trim();
+            const category = inner.substring(secondComma + 1, thirdComma).trim();
+            let desc = inner.substring(thirdComma + 1).trim();
+            desc = desc.replace(/^"|"$/g, "").replace(/\\n/g, " ");
+
+            const idNum = parseInt(idStr, 10);
+            if (!isNaN(idNum) && name) {
+                items.push({
+                    id: idNum,
+                    name: name,
+                    type: category || "道具",
+                    desc: desc || "暂无描述"
+                });
+            }
+        }
+        const uniqueMap = new Map();
+        for (const it of items) {
+            const key = `${it.id}_${it.name}`;
+            if (!uniqueMap.has(key)) uniqueMap.set(key, it);
+        }
+        const unique = Array.from(uniqueMap.values());
+        unique.sort((a, b) => a.id - b.id);
+        return unique;
+    }
+
+    async function loadData() {
+        isLoading = true;
+        renderLoading();
+        const sources = [
+            "https://tuanmengqiu.cn/kfz/cxid/id.txt",
+            "https://api.yuanxin520.top/api/id/id.txt"
+        ];
+        for (const url of sources) {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                const response = await fetch(url, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const text = await response.text();
+                const parsed = parseData(text);
+                if (parsed.length > 0) {
+                    fullItems = parsed;
+                    currentItems = [...fullItems];
+                    searchKeyword = "";
+                    currentPage = 1;
+                    isLoading = false;
+                    renderTable();
+                    renderPagination();
+                    updateStat();
+                    return;
+                }
+            } catch (err) {
+                console.warn(`数据源失败 ${url}:`, err);
+            }
+        }
+        isLoading = false;
+        tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:48px;">⚠️ 加载失败，请检查网络后刷新页面</td></tr>`;
+        statInfo.innerHTML = "❌ 同步失败";
+        paginationDiv.innerHTML = "";
+        showToast("数据加载失败，请稍后重试", true);
+    }
+
+    function renderLoading() {
+        tableBody.innerHTML = `<tr><td colspan="6" class="loading-cell"><div class="spinner"></div> 正在同步云端物品库...</td></tr>`;
+        paginationDiv.innerHTML = "";
+        statInfo.innerHTML = "📡 连接云端...";
+    }
+
+    async function fadeRender(renderFn) {
+        if (isLoading) return;
+        tableWrapper.style.transition = "opacity 0.1s ease";
+        tableWrapper.style.opacity = "0.6";
+        await new Promise(r => setTimeout(r, 60));
+        renderFn();
+        tableWrapper.style.opacity = "1";
+        setTimeout(() => tableWrapper.style.transition = "", 200);
+    }
+
+    // 智能图标 (保留多源尝试)
+    function createIconElement(itemId, itemName) {
+        const container = document.createElement('div');
+        container.className = 'icon-container';
+        const placeholder = document.createElement('div');
+        placeholder.className = 'icon-placeholder';
+        placeholder.textContent = '?';
+        placeholder.style.display = 'flex';
+        const img = document.createElement('img');
+        img.className = 'item-icon';
+        img.alt = `${itemName}图标`;
+        img.style.display = 'none';
+        container.appendChild(placeholder);
+        container.appendChild(img);
+        
+        const tryLoad = (urls, index = 0) => {
+            if (index >= urls.length) {
+                img.style.display = 'none';
+                placeholder.style.display = 'flex';
+                return;
+            }
+            img.src = urls[index];
+            img.onload = () => {
+                img.style.display = 'block';
+                placeholder.style.display = 'none';
+            };
+            img.onerror = () => {
+                tryLoad(urls, index + 1);
+            };
+        };
+        const baseUrls = [
+            `https://tuanmengqiu.cn/kfz/cxid/ico/${itemId}.png`,
+            `https://tuanmengqiu.cn/kfz/cxid/ico/${itemId}.jpg`,
+            `https://api.yuanxin520.top/api/id/ico/${itemId}.png`,
+            `https://api.yuanxin520.top/api/id/ico/${itemId}.jpg`
+        ];
+        tryLoad(baseUrls);
+        return container;
+    }
+
+    function truncateDesc(desc, maxLen = 70) {
+        if (!desc) return "";
+        let clean = desc.replace(/#c0aba1d|#n|@item_\d+#/g, "");
+        if (clean.length > maxLen) return clean.slice(0, maxLen) + "...";
+        return clean;
+    }
+
+    function renderTable() {
+        if (isLoading) return;
+        const start = (currentPage - 1) * pageSize;
+        const pageItems = currentItems.slice(start, start + pageSize);
+        if (pageItems.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:48px;">✨ 没有找到相关物品，试试其他关键词 ✨</td></tr>`;
+            return;
+        }
+        tableBody.innerHTML = '';
+        for (const item of pageItems) {
+            const row = document.createElement('tr');
+            // 图标
+            const iconCell = document.createElement('td');
+            iconCell.style.textAlign = 'center';
+            iconCell.appendChild(createIconElement(item.id, item.name));
+            // 名称
+            const nameCell = document.createElement('td');
+            nameCell.style.fontWeight = '500';
+            nameCell.textContent = item.name;
+            // ID
+            const idCell = document.createElement('td');
+            const idSpan = document.createElement('span');
+            idSpan.className = 'id-badge';
+            idSpan.textContent = item.id;
+            idCell.appendChild(idSpan);
+            // 类别
+            const typeCell = document.createElement('td');
+            const typeSpan = document.createElement('span');
+            typeSpan.className = 'type-badge';
+            typeSpan.textContent = item.type;
+            typeCell.appendChild(typeSpan);
+            // 描述
+            const descCell = document.createElement('td');
+            descCell.className = 'desc-cell';
+            descCell.textContent = truncateDesc(item.desc, 70);
+            descCell.title = item.desc;
+            // 操作
+            const actionCell = document.createElement('td');
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'copy-btn';
+            copyBtn.textContent = '📋 复制ID';
+            copyBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                copyId(item.id, item.name);
+            });
+            actionCell.appendChild(copyBtn);
+            row.appendChild(iconCell);
+            row.appendChild(nameCell);
+            row.appendChild(idCell);
+            row.appendChild(typeCell);
+            row.appendChild(descCell);
+            row.appendChild(actionCell);
+            tableBody.appendChild(row);
+        }
+    }
+
+    function renderPagination() {
+        if (isLoading) {
+            paginationDiv.innerHTML = "";
+            return;
+        }
+        const total = currentItems.length;
+        const totalPages = Math.ceil(total / pageSize);
+        if (totalPages <= 1 && total <= pageSize) {
+            paginationDiv.innerHTML = `<span style="color:#5f7370;">共 ${total} 项 · 迷你世界物品库</span>`;
+            return;
+        }
+        let html = `
+            <button id="prevPageBtn" ${currentPage === 1 ? "disabled" : ""}>◀ 上一页</button>
+            <span style="font-size:0.85rem;">第 ${currentPage} / ${totalPages} 页</span>
+            <button id="nextPageBtn" ${currentPage === totalPages ? "disabled" : ""}>下一页 ▶</button>
+            <div class="page-jump">
+                <span>跳转</span>
+                <input type="number" id="jumpInput" min="1" max="${totalPages}" value="${currentPage}">
+                <button id="jumpBtn" style="background:transparent;">GO</button>
+            </div>
+            <span style="font-size:0.75rem;">共 ${total} 件</span>
+        `;
+        paginationDiv.innerHTML = html;
+        document.getElementById("prevPageBtn")?.addEventListener("click", () => {
+            if (currentPage > 1) { currentPage--; fadeRender(() => { renderTable(); renderPagination(); }); }
+        });
+        document.getElementById("nextPageBtn")?.addEventListener("click", () => {
+            if (currentPage < totalPages) { currentPage++; fadeRender(() => { renderTable(); renderPagination(); }); }
+        });
+        const jumpBtn = document.getElementById("jumpBtn");
+        const jumpInput = document.getElementById("jumpInput");
+        if (jumpBtn) {
+            jumpBtn.addEventListener("click", () => {
+                let target = parseInt(jumpInput.value);
+                if (isNaN(target)) target = 1;
+                target = Math.min(totalPages, Math.max(1, target));
+                if (target !== currentPage) {
+                    currentPage = target;
+                    fadeRender(() => { renderTable(); renderPagination(); });
+                }
+                jumpInput.value = target;
+            });
+        }
+    }
+
+    function updateStat() {
+        if (isLoading) { statInfo.innerHTML = "📡 同步物品库..."; return; }
+        const total = currentItems.length;
+        const all = fullItems.length;
+        if (searchKeyword) {
+            statInfo.innerHTML = `🔍 找到 ${total} 个物品 (共 ${all} 件)`;
+        } else {
+            statInfo.innerHTML = `📦 共索引 ${all} 件物品 · 实时同步`;
+        }
+    }
+
+    function filterItems() {
+        if (isLoading) return;
+        const keyword = searchInput.value.trim().toLowerCase();
+        searchKeyword = keyword;
+        if (keyword === "") {
+            currentItems = [...fullItems];
+        } else {
+            currentItems = fullItems.filter(item =>
+                item.name.toLowerCase().includes(keyword) ||
+                String(item.id).includes(keyword)
+            );
+        }
+        currentPage = 1;
+        fadeRender(() => {
+            renderTable();
+            renderPagination();
+            updateStat();
+        });
+    }
+
+    function resetSearch() {
+        if (isLoading) return;
+        searchInput.value = "";
+        searchKeyword = "";
+        currentItems = [...fullItems];
+        currentPage = 1;
+        fadeRender(() => {
+            renderTable();
+            renderPagination();
+            updateStat();
+        });
+    }
+
+    searchBtn.addEventListener("click", filterItems);
+    resetBtn.addEventListener("click", resetSearch);
+    searchInput.addEventListener("keypress", (e) => { if (e.key === "Enter") filterItems(); });
+
+    loadData();
+</script>
+</body>
+</html>

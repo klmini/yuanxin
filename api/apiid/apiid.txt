@@ -1,0 +1,159 @@
+{"name":"官方版本","android":"1.0","windows":"100,110","ios":"45.0","harmony":"?","gameEnv":"0.0","manufacturer":"深圳市迷你创想(科技)有限公司"}
+{"name":"4399游戏","android":"2.0","windows":"121.0","ios":"53.0","harmony":"-","gameEnv":"0.0","manufacturer":"四三九九网络股份有限公司"}
+{"name":"UC版本","android":"3.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"UC优视科技有限公司"}
+{"name":"咪咕(中国移动)","android":"4.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"咪咕文化科技有限公司"}
+{"name":"沃商店(中国联通)","android":"5.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"中国联通集团有限公司"}
+{"name":"爱游戏","android":"6.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"炫彩互动网络科技有限公司"}
+{"name":"华为 / 荣耀","android":"7.0","windows":null,"ios":null,"harmony":"?","gameEnv":"0.0","manufacturer":"华为软件技术有限公司"}
+{"name":"百度91","android":"8.0","windows":"91.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"九一无线网络有限公司"}
+{"name":"当乐","android":"9.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"北京当乐信息技术有限公司"}
+{"name":"联想","android":"10.0","windows":"112.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"联想集团有限公司"}
+{"name":"魅族","android":"11.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"珠海市魅族科技有限公司"}
+{"name":"小米 / 红米 /黑鲨","android":"12.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"小米科技有限责任公司"}
+{"name":"OPPO / RealMe / 一加","android":"13.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"广东欧加通信科技有限公司"}
+{"name":"安智","android":"14.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"上海安智信息科技有限公司"}
+{"name":"7k7k","android":null,"windows":"122.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"北京奇客创想信息技术有限公司"}
+{"name":"360","android":"15.0","windows":"126.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"奇虎三六零科技有限公司"}
+{"name":"酷狗","android":"16.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"广东酷狗计算机科技有限公司"}
+{"name":"百度-多酷","android":"17.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"北京百度多酷科技有限公司"}
+{"name":"百度手机助手","android":"18.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"北京百度网讯科技有限公司"}
+{"name":"百度贴吧","android":"19.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"北京百度网讯科技有限公司"}
+{"name":"联想游戏中心","android":"20.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"联想软件有限公司"}
+{"name":"腾讯应用宝","android":"21.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市腾讯计算机科技有限公司"}
+{"name":"腾讯浏览器","android":"22.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市腾讯计算机科技有限公司"}
+{"name":"未知渠道","android":"23.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":null}
+{"name":"腾讯华为游戏中心","android":"24.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"华为软件技术有限公司"}
+{"name":"未知渠道","android":"25.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":null}
+{"name":"未知渠道","android":"26.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":null}
+{"name":"未知渠道","android":"27.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":null}
+{"name":"今日头条","android":"28.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"今日头条有限公司"}
+{"name":"美图","android":"29.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"美图公司"}
+{"name":"拇指玩","android":"30.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市拇指游玩科技有限公司"}
+{"name":"机锋","android":"31.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市机锋科技有限公司"}
+{"name":"金立","android":"32.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市金立通讯设备有限公司"}
+{"name":"木蚂蚁","android":"33.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"木蚂蚁(北京)科技有限公司"}
+{"name":"豌豆荚","android":"34.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"北京卓易讯畅科技有限公司"}
+{"name":"酷派","android":"35.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"酷派集团有限公司"}
+{"name":"vivo / IQOO","android":"36.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"维沃移动通信有限公司"}
+{"name":"乐视","android":"37.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"乐视网信息技术股份有限公司"}
+{"name":"搜狗浏览器","android":"38.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"北京搜狗科技发展有限公司"}
+{"name":"搜狗手机助手","android":"39.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"北京搜狗网络技术有限公司"}
+{"name":"搜狗输入法","android":"40.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"北京搜狗信息服务有限公司"}
+{"name":"搜狗搜索","android":"41.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"北京搜狗科技发展有限公司"}
+{"name":"搜狗游戏","android":"42.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"北京搜狗网络技术有限公司"}
+{"name":"Google 国服","android":"43.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"谷歌信息技术(中国)有限公司"}
+{"name":"全民点游","android":"44.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市全民点游科技有限公司"}
+{"name":"抖音云游戏(测试)","android":"44.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"咪咕互动娱乐有限公司"}
+{"name":"未知渠道","android":"46.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":null}
+{"name":"腾讯QQ大厅（移动）","android":"47.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市腾讯计算机科技有限公司"}
+{"name":"未知渠道","android":"48.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":null}
+{"name":"三星","android":"49.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"三星(中国)投资有限公司"}
+{"name":"海信","android":"50.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"海信集团有限公司"}
+{"name":"腾讯极光","android":"51.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"腾讯科技(深圳)有限公司"}
+{"name":"哔哩哔哩","android":"52.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"上海宽娱数码科技有限公司"}
+{"name":"OPPO预装服务","android":"54.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"广东欧加通信科技有限公司"}
+{"name":"百度网讯","android":"55.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"北京百度网讯科技有限公司"}
+{"name":"手Q","android":"56.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"腾讯控股有限公司"}
+{"name":"快手","android":"57.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"北京快手科技有限公司"}
+{"name":"233乐园","android":"58.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"北京龙威互动科技有限公司"}
+{"name":"迷你-单机服务","android":"59.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市迷你创想(科技)有限公司"}
+{"name":"抖音云游戏","android":"60.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"咪咕互动娱乐有限公司"}
+{"name":"快发助手","android":"60.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"成都快发助手科技有限公司"}
+{"name":"天天游戏中心","android":"61.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市力天保利科技有限公司"}
+{"name":"CPS-GG助手","android":"62.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"北京悠扬互动科技有限公司"}
+{"name":"CPS-诺基亚","android":"63.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"诺基亚通信系统技术(北京)有限公司"}
+{"name":"CPS-聚丰","android":"64.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"杭州聚丰新材料有限公司"}
+{"name":"CPS-酷比","android":"65.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"四川酷比通信设备有限公司"}
+{"name":"CPS-雷震","android":"66.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"苏州雷震网络科技股份有限公司"}
+{"name":"CPS-努比亚 / 红魔","android":"67.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"努比亚技术有限公司"}
+{"name":"CPS-咪咕大屏","android":"68.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"咪咕文化科技有限公司"}
+{"name":"CPS-锤子","android":"69.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"北京锤子数码科技有限公司"}
+{"name":"CPS-友方","android":"70.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市友梦互动科技有限公司"}
+{"name":"CPS-中兴","android":"71.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"中兴九城网络科技无锡有限公司"}
+{"name":"CPS-多玩","android":"72.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"广州华多网络科技有限公司"}
+{"name":"CPS-应用汇","android":"73.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"北京掌汇天下科技有限公司"}
+{"name":"CPS-移动MM","android":"74.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"中国移动通信集团有限公司"}
+{"name":"CPS-青柠","android":"75.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"北京青柠互娱科技有限公司"}
+{"name":"抖音直播联运","android":"76.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"北京抖音科技有限公司"}
+{"name":"CPS-18183","android":"76.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"天津畅玩网络科技有限公司"}
+{"name":"CPS-迅游","android":"77.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"四川迅游网络科技股份有限公司"}
+{"name":"CPS-联通","android":"77.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"中国联合网络通信集团有限公司"}
+{"name":"CPS-仙果","android":"77.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"北京仙果科技股份有限公司"}
+{"name":"CPS-金立应用","android":"78.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市金立通信设备有限公司"}
+{"name":"官方版-公众号","android":"79.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市迷你创想(科技)有限公司"}
+{"name":"CPS-美图","android":"80.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"美图公司"}
+{"name":"官方版-IP线","android":"81.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市迷你创想(科技)有限公司"}
+{"name":"CPS-PP助手","android":"82.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"广州铁人网络科技有限公司"}
+{"name":"CPS-神马搜索","android":"83.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"阿里巴巴集团"}
+{"name":"CPS-安智","android":"83.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"湖南安智网络科技有限公司"}
+{"name":"CPS-豌豆荚","android":"84.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"北京卓易讯畅科技有限公司"}
+{"name":"小7手游","android":"85.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳尚米网络技术有限公司"}
+{"name":"GG助手","android":"86.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"悠扬互动"}
+{"name":"今日头条分站","android":"87.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"今日头条有限公司"}
+{"name":"CPS-7723","android":"88.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"厦门巴掌互动科技有限公司"}
+{"name":"爱奇艺","android":"89.0","windows":"128.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"北京爱奇艺科技有限公司"}
+{"name":"芒果TV","android":"90.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"湖南快乐阳光互动娱乐传媒有限公司"}
+{"name":"CPS-全能市场","android":"91.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"市胜意科技发展有限公司"}
+{"name":"CPS-市场部","android":"91.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"市胜意科技发展有限公司"}
+{"name":"CPS-7723 NEW","android":"92.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"厦门巴掌互动科技有限公司"}
+{"name":"CPS-YiLe","android":"93.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"上海怡乐塑模科技有限公司"}
+{"name":"CPS-咪咕云","android":"94.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"咪咕文化科技有限公司"}
+{"name":"CPS-极速互动","android":"94.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"广州极速互动网络科技有限公司"}
+{"name":"CPS-葫芦侠","android":"95.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"葫芦侠（广州）科技有限公司"}
+{"name":"CPS-虫虫游戏","android":"96.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"厦门市虫虫网络科技有限公司"}
+{"name":"咪咕快游","android":"96.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"咪咕互动娱乐有限公司"}
+{"name":"CPS-233乐园","android":"97.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"北京龙威互动科技有限公司"}
+{"name":"盒子Lite精简版","android":"98.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市迷你创想(科技)有限公司"}
+{"name":"官方先遣服","android":"99.0","windows":"199.0","ios":null,"harmony":"-","gameEnv":"2.0","manufacturer":"深圳市迷你创想(科技)有限公司"}
+{"name":"腾讯QQ大厅PC","android":null,"windows":"101.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市腾讯计算机科技有限公司"}
+{"name":"WeGame PC","android":null,"windows":"102.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市腾讯计算机科技有限公司"}
+{"name":"未知渠道","android":null,"windows":"103.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":null}
+{"name":"未知渠道","android":null,"windows":"104.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":null}
+{"name":"未知渠道","android":null,"windows":"105.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":null}
+{"name":"未知渠道","android":null,"windows":"106.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":null}
+{"name":"未知渠道","android":null,"windows":"107.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":null}
+{"name":"未知渠道","android":null,"windows":"108.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":null}
+{"name":"QQ空间","android":"109.0","windows":"109.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"腾讯科技(深圳)有限公司"}
+{"name":"未知渠道","android":null,"windows":"111.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":null}
+{"name":"CPS-快吧游戏","android":null,"windows":"113,130","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"南京奇炫欢享网络技术有限公司"}
+{"name":"雷神加速器","android":null,"windows":"114.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"雷神控股有限公司"}
+{"name":"阿里云游戏","android":null,"windows":"115.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"灵犀互娱（阿里集团旗下）"}
+{"name":"QQ大厅推广版","android":"116.0","windows":"117.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"腾讯控股有限公司"}
+{"name":"QQ大厅推广-PCG联盟","android":null,"windows":"118.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"腾讯控股有限公司"}
+{"name":"QQ大厅-SEM推广","android":null,"windows":"119.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"腾讯控股有限公司"}
+{"name":"未知渠道","android":null,"windows":"120.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":null}
+{"name":"2144小游戏","android":null,"windows":"123.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"上海剑圣网络科技有限公司"}
+{"name":"飞火游戏平台","android":null,"windows":"124.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"上海锋趣网络科技有限公司"}
+{"name":"迅雷","android":null,"windows":"125.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市迅雷网络技术有限公司"}
+{"name":"爱拍","android":null,"windows":"127.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"广州爱拍网络科技有限公司"}
+{"name":"爱奇艺","android":null,"windows":"128.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"北京爱奇艺科技有限公司"}
+{"name":"4399趣核平台","android":null,"windows":"129.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"四三九九网络股份有限公司"}
+{"name":"官方网页","android":null,"windows":"200.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市迷你创想(科技)有限公司"}
+{"name":"教育版 / 迷你爱学","android":null,"windows":"299.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市迷你学文化(科技)有限公司"}
+{"name":"海外谷歌","android":"303.0","windows":null,"ios":null,"harmony":"-","gameEnv":"10.0","manufacturer":"Google Inc."}
+{"name":"海外谷歌-越南版","android":"304.0","windows":null,"ios":null,"harmony":"-","gameEnv":"10.0","manufacturer":"Google Inc."}
+{"name":"海外华为","android":"307.0","windows":null,"ios":null,"harmony":"-","gameEnv":"10.0","manufacturer":"Huawei Inc."}
+{"name":"官方海外版","android":"310.0","windows":"410.0","ios":null,"harmony":"-","gameEnv":"10.0","manufacturer":"Miniwan Inc."}
+{"name":"海外小米 / 海外POCO","android":"312.0","windows":null,"ios":null,"harmony":"-","gameEnv":"10.0","manufacturer":"Xiaomi Inc."}
+{"name":"海外OPPO","android":"313.0","windows":null,"ios":null,"harmony":"-","gameEnv":"10.0","manufacturer":"OPPO Inc."}
+{"name":"海外VIVO","android":"336.0","windows":null,"ios":null,"harmony":"-","gameEnv":"10.0","manufacturer":"Vivo Inc."}
+{"name":"海外IOS","android":null,"windows":null,"ios":"345.0","harmony":"-","gameEnv":"10.0","manufacturer":"Apple Inc."}
+{"name":"海外三星","android":"349.0","windows":null,"ios":null,"harmony":"-","gameEnv":"10.0","manufacturer":"Samsung Group"}
+{"name":"海外Lite","android":"398.0","windows":null,"ios":null,"harmony":"-","gameEnv":"10.0","manufacturer":"Miniwan Inc."}
+{"name":"海外先遣服","android":"399.0","windows":"499.0","ios":null,"harmony":"-","gameEnv":"12.0","manufacturer":"Miniwan Inc."}
+{"name":"海外谷歌-拉美版本","android":null,"windows":"411.0","ios":null,"harmony":"-","gameEnv":"10.0","manufacturer":"Google Inc."}
+{"name":"Mini Studio","android":null,"windows":"500.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市迷你创想(科技)有限公司"}
+{"name":"教育Lite","android":"501.0","windows":"610.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市迷你创想(科技)有限公司"}
+{"name":"海外Steam","android":null,"windows":"402.0","ios":null,"harmony":"-","gameEnv":"10.0","manufacturer":"深圳市迷你创想(科技)有限公司"}
+{"name":"海外版-拉美特供","android":null,"windows":"411.0","ios":null,"harmony":"-","gameEnv":"10.0","manufacturer":"深圳市迷你创想(科技)有限公司"}
+{"name":"迷你编辑器1","android":null,"windows":"901.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市迷你创想(科技)有限公司"}
+{"name":"迷你编辑器2","android":null,"windows":"902.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市迷你创想(科技)有限公司"}
+{"name":"迷你编辑器3","android":null,"windows":"903.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市迷你创想(科技)有限公司"}
+{"name":"迷你盒子","android":"911.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市迷你创想(科技)有限公司"}
+{"name":"充值服务","android":null,"windows":"991.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市迷你创想(科技)有限公司"}
+{"name":"盒子PC","android":null,"windows":"911.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市迷你创想(科技)有限公司"}
+{"name":"网页充值统计","android":null,"windows":"992.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市迷你创想(科技)有限公司"}
+{"name":"X-GAME实名认证","android":null,"windows":"993.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市迷你创想(科技)有限公司"}
+{"name":"开发者服务平台","android":null,"windows":"994.0","ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市迷你创想(科技)有限公司"}
+{"name":"微信小程序 / PC版署版本","android":"998.0","windows":null,"ios":null,"harmony":"-","gameEnv":"0.0","manufacturer":"深圳市迷你创想(科技)有限公司"}
+{"name":"官方内网","android":null,"windows":"999.0","ios":null,"harmony":"-","gameEnv":"1.0","manufacturer":"深圳市迷你创想(科技)有限公司"}

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>站点创建成功 · 优雅管理后台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #e9f0fc 0%, #dce6f5 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1.5rem;
+            position: relative;
+        }
+
+        /* 动态抽象几何背景装饰 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(45, 120, 200, 0.08) 2%, transparent 2.5%),
+                radial-gradient(circle at 85% 70%, rgba(30, 90, 160, 0.06) 1.8%, transparent 2.2%),
+                repeating-linear-gradient(45deg, rgba(255,255,245,0.02) 0px, rgba(255,255,245,0.02) 2px, transparent 2px, transparent 8px);
+            background-size: 48px 48px, 60px 60px, 16px 16px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* 主卡片容器 */
+        .success-card {
+            max-width: 780px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(0px);
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 1px 2px rgba(0,0,0,0.03);
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s;
+            z-index: 10;
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        .success-card:hover {
+            box-shadow: 0 30px 55px -12px rgba(0, 0, 0, 0.3);
+            transform: translateY(-3px);
+        }
+
+        /* 头部装饰条 */
+        .card-accent {
+            height: 6px;
+            background: linear-gradient(90deg, #2c7da0, #61a5c2, #89c2d9);
+        }
+
+        /* 内边距区域 */
+        .card-content {
+            padding: 2.2rem 2rem 2.5rem;
+        }
+
+        @media (min-width: 640px) {
+            .card-content {
+                padding: 2.8rem 3rem 3rem;
+            }
+        }
+
+        /* 图标区域 */
+        .icon-check {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        .check-circle {
+            background: #e8f3e8;
+            width: 64px;
+            height: 64px;
+            border-radius: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2b7e45;
+            font-size: 2.4rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        /* 主标题 */
+        .main-title {
+            text-align: center;
+            font-size: 1.9rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            background: linear-gradient(135deg, #1e4663, #2b6a8f);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        @media (min-width: 560px) {
+            .main-title {
+                font-size: 2.3rem;
+            }
+        }
+
+        .sub-meta {
+            text-align: center;
+            color: #5f7f9e;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #e2edf5;
+            display: inline-block;
+            width: auto;
+            margin: 0 auto 1.2rem;
+            padding-bottom: 0.5rem;
+        }
+
+        .info-badge {
+            background: #f0f6fe;
+            border-radius: 40px;
+            padding: 0.6rem 1.2rem;
+            display: inline-block;
+            font-size: 0.8rem;
+            color: #1f6392;
+            margin-bottom: 1.8rem;
+            font-weight: 500;
+        }
+
+        /* 温馨提示区 */
+        .default-message {
+            background: #fef9e6;
+            border-left: 5px solid #f4b942;
+            border-radius: 20px;
+            padding: 1rem 1.4rem;
+            margin: 1.8rem 0 2rem;
+            color: #7a6300;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .default-message span:first-child {
+            font-size: 1.6rem;
+        }
+
+        /* 列表样式 - 优雅简洁 */
+        .info-list {
+            list-style: none;
+            margin: 1.8rem 0 1.2rem;
+            padding: 0;
+            background: #f9fbfd;
+            border-radius: 28px;
+            overflow: hidden;
+            border: 1px solid #eaf0f5;
+        }
+        .info-list li {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e6edf3;
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            font-size: 1rem;
+            color: #1e3b4f;
+            transition: background 0.2s;
+        }
+        .info-list li:last-child {
+            border-bottom: none;
+        }
+        .info-list li:hover {
+            background: #ffffff;
+        }
+        .list-icon {
+            font-size: 1.3rem;
+            min-width: 32px;
+            text-align: center;
+            color: #4488aa;
+        }
+        .list-text {
+            flex: 1;
+            line-height: 1.4;
+        }
+        .list-text strong {
+            font-weight: 600;
+            color: #146b3a;
+            background: #e7f3ea;
+            padding: 0.1rem 0.4rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+        }
+
+        /* FTP 高亮提醒卡片 */
+        .ftp-note {
+            background: linear-gradient(110deg, #eef5fc 0%, #e6f0f7 100%);
+            border-radius: 24px;
+            padding: 1.2rem 1.6rem;
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            border: 1px solid #cde3f0;
+        }
+        .ftp-icon {
+            background: #2c7da0;
+            color: white;
+            width: 42px;
+            height: 42px;
+            border-radius: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+        .ftp-text {
+            flex: 1;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #0f4c6b;
+        }
+        .ftp-text code {
+            background: #ffffffcc;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #155f7c;
+            border: 1px solid #b9d4e7;
+            margin: 0 4px;
+        }
+
+        /* 操作按钮区 (可选) */
+        .action-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            gap: 1rem;
+            margin-top: 2rem;
+            border-top: 1px dashed #dbe9f2;
+            padding-top: 1.8rem;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+            background: white;
+            border: 1px solid #cbdde9;
+            color: #2c5a7a;
+        }
+        .btn-primary {
+            background: #2c7da0;
+            border-color: #2c7da0;
+            color: white;
+            box-shadow: 0 2px 6px rgba(44,125,160,0.2);
+        }
+        .btn-primary:hover {
+            background: #1f5e7c;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+        .btn-outline:hover {
+            background: #eef3fc;
+            border-color: #88b8d0;
+        }
+
+        /* 页脚辅助说明 */
+        .footer-help {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.7rem;
+            color: #7d9aba;
+            border-top: 1px solid #e2edf5;
+            padding-top: 1.5rem;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 500px) {
+            .card-content {
+                padding: 1.6rem;
+            }
+            .info-list li {
+                padding: 0.8rem 1rem;
+                flex-wrap: wrap;
+            }
+            .list-icon {
+                font-size: 1.1rem;
+            }
+            .ftp-note {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="success-card">
+    <div class="card-accent"></div>
+    <div class="card-content">
+        <!-- 成功图标区域 -->
+        <div class="icon-check">
+            <div class="check-circle">
+                ✓
+            </div>
+        </div>
+
+        <!-- 主标题 -->
+        <h1 class="main-title">恭喜，站点创建成功！</h1>
+        <div style="text-align: center; margin: 0.2rem 0 0.8rem;">
+            <span class="info-badge">✨ 已就绪 · 欢迎使用 ✨</span>
+        </div>
+        <p style="text-align: center; color: #4c6f8c; font-size: 0.9rem; max-width: 85%; margin: 0 auto 0.5rem;">
+            您的网站空间已经配置完成，现在可以上传和发布网站内容了。
+        </p>
+
+        <!-- 原提示信息：默认index.html 说明 (美化后更清晰) -->
+        <div class="default-message">
+            <span>📄</span>
+            <span>本页面是系统生成的默认首页 — <strong>index.html</strong> (位于FTP根目录)</span>
+        </div>
+
+        <!-- 三个核心列表 (原内容增强) -->
+        <ul class="info-list">
+            <li>
+                <div class="list-icon">📁</div>
+                <div class="list-text">本页面在FTP根目录下的 <strong>index.html</strong></div>
+            </li>
+            <li>
+                <div class="list-icon">✏️</div>
+                <div class="list-text">您可以<strong>修改、删除或覆盖</strong>本页面，上传自己的网站程序</div>
+            </li>
+            <li>
+                <div class="list-icon">🔐</div>
+                <div class="list-text">FTP相关信息，请到 <strong>“面板系统后台 > FTP”</strong> 查看</div>
+            </li>
+        </ul>
+
+        <!-- FTP 额外帮助卡片 让信息更醒目 -->
+        <div class="ftp-note">
+            <div class="ftp-icon">🖥️</div>
+            <div class="ftp-text">
+                💡 <strong>FTP连接指南</strong> — 使用您的FTP账号与密码，连接地址通常为 <code>ftp://您的域名或IP</code>，<br>
+                端口默认为 <code>21</code>。更多细节请登录主机面板查看。
+            </div>
+        </div>
+
+        <!-- 辅助操作 / 友好链接 (仅作参考，未改变原始功能性) -->
+        <div class="action-links">
+            <a href="#" class="btn btn-primary" id="copyHintBtn" style="cursor:pointer;">
+                📋 复制FTP提醒
+            </a>
+            <a href="#" class="btn btn-outline" id="refreshPage" style="cursor:pointer;">
+                🔄 刷新页面
+            </a>
+            <a href="#" class="btn btn-outline" target="_blank" rel="noopener" style="cursor:default; opacity:0.7;">
+                📂 面板后台 (示例)
+            </a>
+        </div>
+
+        <!-- 优雅页脚，保留原意 -->
+        <div class="footer-help">
+            ⚡ 系统自动生成 · 可随时替换为您的网站首页 ⚡
+        </div>
+    </div>
+</div>
+
+<script>
+    // 简单交互: 复制 FTP 信息提示，提升用户体验（纯辅助功能）
+    const copyBtn = document.getElementById('copyHintBtn');
+    if(copyBtn) {
+        copyBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const ftpText = "FTP相关信息，请到面板系统后台 > FTP 查看。\n通常FTP地址为您的域名或服务器IP，端口21。";
+            navigator.clipboard.writeText(ftpText).then(() => {
+                // 轻提示
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = '✅ 已复制提示';
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalText;
+                }, 1500);
+            }).catch(() => {
+                alert('手动复制: ' + ftpText);
+            });
+        });
+    }
+
+    const refreshBtn = document.getElementById('refreshPage');
+    if(refreshBtn) {
+        refreshBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.reload();
+        });
+    }
+</script>
+</body>
+</html>

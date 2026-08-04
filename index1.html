@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>站点创建成功 · WinUI 3 风格面板</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* WinUI 3 Fluent Design 系统 —— 亚克力质感 + 柔和背景 */
+        body {
+            background: #eef2f5;  /* 柔和基底色 */
+            font-family: 'Segoe UI Variable', 'Segoe UI', 'Segoe UI Display', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 32px 24px;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* 亚克力背景 (Acrylic) 多层模糊 + 微纹理 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 20%, rgba(245, 250, 255, 0.7), rgba(230, 240, 248, 0.5));
+            backdrop-filter: blur(70px);
+            z-index: -2;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" opacity="0.08"><path fill="none" d="M0 0h800v800H0z"/><path fill="%23007acc" d="M400 100L500 200 400 300 300 200zM200 300L300 400 200 500 100 400zM600 300L700 400 600 500 500 400zM400 500L500 600 400 700 300 600z"/></svg>');
+            background-repeat: repeat;
+            background-size: 52px;
+            opacity: 0.12;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* 主应用容器 — 类 WinUI ContentDialog / 主窗口 */
+        .winui-container {
+            max-width: 860px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(32px);
+            border-radius: 28px;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.08), 0 0 0 0.5px rgba(0, 0, 0, 0.02), 0 18px 32px -12px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+            transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1), box-shadow 0.2s ease;
+        }
+
+        .winui-container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 24px 48px -16px rgba(0, 0, 0, 0.16);
+        }
+
+        /* 顶部装饰条 WinUI 强调色 */
+        .app-bar-accent {
+            height: 4px;
+            background: linear-gradient(90deg, #0078d4, #2b88d8, #5ca9e2);
+        }
+
+        /* 模拟标题栏 (无窗口按钮，保留纯净信息) */
+        .app-title-section {
+            padding: 18px 28px 8px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 12px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            background: rgba(248, 250, 252, 0.5);
+        }
+
+        .title-group h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e2f3c;
+            letter-spacing: -0.2px;
+        }
+
+        .title-group p {
+            font-size: 0.75rem;
+            color: #5c7f9c;
+            margin-top: 4px;
+        }
+
+        .badge-status {
+            background: rgba(0, 120, 212, 0.12);
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #106ebe;
+            backdrop-filter: blur(4px);
+            border: 0.5px solid rgba(0, 0, 0, 0.05);
+        }
+
+        /* 主要内容区域 */
+        .main-content {
+            padding: 24px 28px 32px;
+        }
+
+        /* 成功图标 + 大标题 */
+        .hero-section {
+            text-align: center;
+            margin-bottom: 1.6rem;
+        }
+
+        .icon-success {
+            background: #e9f5ef;
+            width: 80px;
+            height: 80px;
+            border-radius: 80px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 6px 14px rgba(0, 120, 212, 0.12);
+            border: 1px solid rgba(0, 120, 212, 0.12);
+        }
+
+        .icon-success span {
+            font-size: 3.2rem;
+            font-weight: 500;
+            color: #1f8f5e;
+        }
+
+        .main-headline {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(115deg, #1a5d7a, #2c7da0);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+            margin-bottom: 0.3rem;
+        }
+
+        .sub-headline {
+            color: #5a7b9a;
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+
+        /* 默认提示卡片 (类似info bar) */
+        .info-message-card {
+            background: #fef7e6;
+            border-radius: 20px;
+            padding: 1rem 1.4rem;
+            margin: 1.5rem 0 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            border: 1px solid rgba(244, 185, 66, 0.3);
+            backdrop-filter: blur(4px);
+        }
+
+        .info-message-card .emoji-big {
+            font-size: 1.8rem;
+        }
+
+        .info-message-card p {
+            flex: 1;
+            font-size: 0.85rem;
+            color: #7a6300;
+            font-weight: 500;
+        }
+
+        .info-message-card strong {
+            background: rgba(244, 185, 66, 0.2);
+            padding: 2px 8px;
+            border-radius: 30px;
+            font-weight: 600;
+        }
+
+        /* WinUI 风格列表 (类似设置项) */
+        .feature-list {
+            background: rgba(245, 248, 250, 0.8);
+            border-radius: 24px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin: 1.5rem 0 1.2rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 1rem 1.6rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            transition: background 0.15s ease;
+        }
+
+        .feature-item:last-child {
+            border-bottom: none;
+        }
+
+        .feature-item:hover {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .feature-icon {
+            font-size: 1.5rem;
+            min-width: 40px;
+            text-align: center;
+            color: #2c7da0;
+        }
+
+        .feature-text {
+            flex: 1;
+            font-size: 0.9rem;
+            color: #1f3f54;
+            line-height: 1.4;
+        }
+
+        .feature-text strong {
+            background: #e2f0ea;
+            padding: 0.1rem 0.5rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #1c6b48;
+        }
+
+        /* FTP 高亮卡片 - 更具 WinUI 风格 */
+        .ftp-card {
+            background: #eef4fc;
+            border-radius: 24px;
+            padding: 1rem 1.5rem;
+            margin: 1.2rem 0 0.5rem;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            border: 1px solid rgba(0, 120, 212, 0.15);
+            transition: all 0.2s;
+        }
+
+        .ftp-card:hover {
+            background: #e9f1fa;
+            border-color: rgba(0, 120, 212, 0.3);
+        }
+
+        .ftp-icon {
+            background: #0078d4;
+            width: 48px;
+            height: 48px;
+            border-radius: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 120, 212, 0.2);
+        }
+
+        .ftp-details {
+            flex: 1;
+        }
+
+        .ftp-details strong {
+            font-size: 0.9rem;
+            color: #0f4c6b;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .ftp-details p {
+            font-size: 0.8rem;
+            color: #2f678b;
+        }
+
+        .ftp-details code {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 2px 8px;
+            border-radius: 30px;
+            font-family: 'Cascadia Mono', monospace;
+            font-size: 0.75rem;
+            color: #106ebe;
+            margin-right: 6px;
+        }
+
+        /* 操作按钮组 (WinUI 按钮) */
+        .action-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 28px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        .winui-btn {
+            background: white;
+            border: 0.5px solid rgba(0, 0, 0, 0.12);
+            padding: 8px 24px;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.18s cubic-bezier(0.2, 0.9, 0.4, 1.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(4px);
+            color: #1c1e21;
+        }
+
+        .winui-btn-primary {
+            background: #0078d4;
+            border: none;
+            color: white;
+            box-shadow: 0 2px 6px rgba(0, 120, 212, 0.2);
+        }
+
+        .winui-btn-primary:hover {
+            background: #106ebe;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 12px rgba(0, 120, 212, 0.2);
+        }
+
+        .winui-btn-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-1px);
+            border-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .winui-btn:active {
+            transform: translateY(1px);
+        }
+
+        /* 页脚文案 */
+        .footer-note {
+            margin-top: 28px;
+            text-align: center;
+            font-size: 0.7rem;
+            color: #89a9c4;
+            border-top: 1px solid rgba(0, 0, 0, 0.04);
+            padding-top: 20px;
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 640px) {
+            body {
+                padding: 20px 16px;
+            }
+            .main-content {
+                padding: 20px 18px;
+            }
+            .app-title-section {
+                padding: 14px 20px;
+            }
+            .main-headline {
+                font-size: 1.6rem;
+            }
+            .feature-item {
+                padding: 0.8rem 1rem;
+                gap: 12px;
+            }
+            .ftp-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .action-bar {
+                justify-content: center;
+            }
+        }
+
+        /* Toast 提示 (WinUI 风格) */
+        .winui-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #202020e6;
+            backdrop-filter: blur(32px);
+            color: white;
+            padding: 10px 24px;
+            border-radius: 60px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            z-index: 10000;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s ease;
+            border: 0.5px solid rgba(255, 255, 255, 0.2);
+            pointer-events: none;
+            font-family: inherit;
+        }
+    </style>
+</head>
+<body>
+<div class="winui-container">
+    <div class="app-bar-accent"></div>
+    
+    <!-- 标题栏区域 (WinUI 轻量风格，无窗口控制) -->
+    <div class="app-title-section">
+        <div class="title-group">
+            <h2>主机控制台 · 站点管理</h2>
+            <p>已就绪 · 立即部署您的网站项目</p>
+        </div>
+        <div class="badge-status">
+            🟢 运行中 | 站点创建成功
+        </div>
+    </div>
+
+    <div class="main-content">
+        <!-- 成功图标 + 主视觉 -->
+        <div class="hero-section">
+            <div class="icon-success">
+                <span>✓</span>
+            </div>
+            <div class="main-headline">恭喜，站点创建成功！</div>
+            <div class="sub-headline">您的网站空间已经配置完成，现在可以上传和发布网站内容了。</div>
+        </div>
+
+        <!-- 系统默认 index.html 提醒卡片 (原提示) -->
+        <div class="info-message-card">
+            <div class="emoji-big">📄</div>
+            <p>本页面是系统生成的默认首页 — <strong>index.html</strong> (位于FTP根目录)</p>
+        </div>
+
+        <!-- 核心信息列表 (WinUI 设计重构) -->
+        <div class="feature-list">
+            <div class="feature-item">
+                <div class="feature-icon">📁</div>
+                <div class="feature-text">本页面在FTP根目录下的 <strong>index.html</strong></div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">✏️</div>
+                <div class="feature-text">您可以<strong>修改、删除或覆盖</strong>本页面，上传自己的网站程序</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🔐</div>
+                <div class="feature-text">FTP相关信息，请到 <strong>“面板系统后台 > FTP”</strong> 查看</div>
+            </div>
+        </div>
+
+        <!-- FTP 连接指南 - 增强卡片 -->
+        <div class="ftp-card">
+            <div class="ftp-icon">🖥️</div>
+            <div class="ftp-details">
+                <strong>🔌 FTP 连接指南</strong>
+                <p>使用您的FTP账号与密码，连接地址通常为 <code>ftp://您的域名或IP</code>，端口默认为 <code>21</code>。<br>
+                更多细节请登录主机面板查看完整配置。</p>
+            </div>
+        </div>
+
+        <!-- 辅助操作按钮（符合 WinUI 交互） -->
+        <div class="action-bar">
+            <button class="winui-btn winui-btn-primary" id="copyFtpBtn">
+                📋 复制FTP提醒
+            </button>
+            <button class="winui-btn winui-btn-secondary" id="refreshPageBtn">
+                🔄 刷新页面
+            </button>
+            <button class="winui-btn winui-btn-secondary" id="mockGuideBtn" style="cursor:default; opacity:0.8;">
+                📂 面板后台 (示例)
+            </button>
+        </div>
+
+        <div class="footer-note">
+            ⚡ 系统自动生成 · 可随时替换为您的网站首页 · WinUI 3 极简管理界面 ⚡
+        </div>
+    </div>
+</div>
+
+<script>
+    // 优雅 Toast 提示 (WinUI 风格)
+    function showWinToast(message, isError = false) {
+        const existing = document.querySelector('.winui-toast');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.className = 'winui-toast';
+        toast.textContent = message;
+        if (isError) toast.style.background = "#c42b1ce6";
+        document.body.appendChild(toast);
+        setTimeout(() => toast.style.transform = "translateX(-50%) translateY(0px)", 10);
+        setTimeout(() => {
+            toast.style.opacity = "0";
+            toast.style.transform = "translateX(-50%) translateY(20px)";
+            setTimeout(() => toast.remove(), 250);
+        }, 2100);
+    }
+
+    // 复制 FTP 提醒 (保留原有信息的强化版)
+    const copyBtn = document.getElementById('copyFtpBtn');
+    if (copyBtn) {
+        copyBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const ftpMessage = "FTP相关信息，请到面板系统后台 > FTP 查看。\n通常FTP地址为您的域名或服务器IP，端口21。\n使用您的FTP账号与密码进行连接。";
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(ftpMessage).then(() => {
+                    showWinToast("✅ FTP 提醒已复制到剪贴板");
+                }).catch(() => {
+                    fallbackCopy(ftpMessage);
+                });
+            } else {
+                fallbackCopy(ftpMessage);
+            }
+            function fallbackCopy(text) {
+                const textarea = document.createElement("textarea");
+                textarea.value = text;
+                textarea.style.position = "fixed";
+                textarea.style.top = "-1000px";
+                document.body.appendChild(textarea);
+                textarea.select();
+                const success = document.execCommand("copy");
+                document.body.removeChild(textarea);
+                if (success) showWinToast("✅ FTP 提醒已复制");
+                else showWinToast("❌ 复制失败，请手动复制", true);
+            }
+        });
+    }
+
+    // 刷新页面按钮
+    const refreshBtn = document.getElementById('refreshPageBtn');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.reload();
+        });
+    }
+
+    // 示例按钮不需要跳转，仅视觉占位 (保持一致性)
+    const mockGuide = document.getElementById('mockGuideBtn');
+    if (mockGuide) {
+        mockGuide.addEventListener('click', (e) => {
+            e.preventDefault();
+            showWinToast("💡 示例按钮: 实际可链接至面板后台地址", false);
+        });
+    }
+
+    // 附加小细节：页面加载完成后的淡入动画
+    window.addEventListener('DOMContentLoaded', () => {
+        const container = document.querySelector('.winui-container');
+        if (container) {
+            container.style.animation = 'fadeSlideUp 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards';
+        }
+    });
+    // 添加简单动画关键帧 (内联)
+    const styleAnim = document.createElement('style');
+    styleAnim.textContent = `
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .winui-container {
+            opacity: 0; /* 初始透明，动画渐显 */
+            animation: fadeSlideUp 0.4s ease-out forwards;
+        }
+    `;
+    document.head.appendChild(styleAnim);
+</script>
+</body>
+</html>

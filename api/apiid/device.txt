@@ -1,0 +1,26 @@
+{"name":"Redmi K20 Pro","System":"LineageOS 21.1","Start time":"2025/7/13","End time":"2027/7/12","days":"729","Status":"生效中","manufacturer":"原心联创"}
+{"name":"Redmi K50 Pro","System":"LineageOS 20","Start time":"2025/7/15","End time":"2026/7/12","days":"364","Status":"生效中","manufacturer":"原心联创"}
+{"name":"Xiaomi 6","System":"LineageOS 19","Start time":"2024/3/21","End time":"2024/7/12","days":"120","Status":"已过期","manufacturer":"原心联创"}
+{"name":"Redmi K70","System":"LineageOS 20","Start time":"2024/8/2","End time":"2025/8/1","days":"364","Status":"已过期","manufacturer":"原心联创"}
+{"name":"OnePlus 11","System":"LineageOS 20","Start time":"2023/2/15","End time":"2024/2/14","days":"364","Status":"已过期","manufacturer":"原心联创"}
+{"name":"Realme GT Neo5","System":"LineageOS 19.1","Start time":"2023/4/1","End time":"2023/10/1","days":"183","Status":"已过期","manufacturer":"原心联创"}
+{"name":"iQOO 11 Pro","System":"LineageOS 19","Start time":"2023/1/5","End time":"2023/7/5","days":"181","Status":"已过期","manufacturer":"原心联创"}
+{"name":"vivo X90","System":"LineageOS 18.1","Start time":"2023/3/10","End time":"2023/9/9","days":"183","Status":"已过期","manufacturer":"原心联创"}
+{"name":"OPPO Find X6","System":"LineageOS 19.1","Start time":"2023/6/15","End time":"2023/12/14","days":"182","Status":"已过期","manufacturer":"原心联创"}
+{"name":"Honor Magic5","System":"LineageOS 19","Start time":"2023/3/20","End time":"2023/9/19","days":"183","Status":"已过期","manufacturer":"原心联创"}
+{"name":"Meizu 20","System":"LineageOS 18.1","Start time":"2023/4/25","End time":"2023/10/24","days":"182","Status":"已过期","manufacturer":"原心联创"}
+{"name":"OnePlus Nord 3","System":"LineageOS 20","Start time":"2023/7/1","End time":"2024/6/30","days":"365","Status":"已过期","manufacturer":"原心联创"}
+{"name":"Realme GT3","System":"LineageOS 19.1","Start time":"2023/5/20","End time":"2023/11/19","days":"183","Status":"已过期","manufacturer":"原心联创"}
+{"name":"iQOO Neo8","System":"LineageOS 20","Start time":"2023/6/30","End time":"2024/6/29","days":"365","Status":"已过期","manufacturer":"原心联创"}
+{"name":"OnePlus 12","System":"LineageOS 21.0","Start time":"2025/7/13","End time":"2026/7/12","days":"364","Status":"生效中","manufacturer":"原心联创"}
+{"name":"Realme GT5","System":"LineageOS 20.1","Start time":"2025/8/1","End time":"2026/7/31","days":"364","Status":"生效中","manufacturer":"原心联创"}
+{"name":"iQOO 12","System":"LineageOS 20","Start time":"2025/9/1","End time":"2026/8/31","days":"364","Status":"生效中","manufacturer":"原心联创"}
+{"name":"vivo X100","System":"LineageOS 21.0","Start time":"2025/10/1","End time":"2026/9/30","days":"364","Status":"生效中","manufacturer":"原心联创"}
+{"name":"OPPO Find X7","System":"LineageOS 20","Start time":"2025/11/1","End time":"2026/10/31","days":"364","Status":"生效中","manufacturer":"原心联创"}
+{"name":"Honor Magic6","System":"LineageOS 20.1","Start time":"2025/12/1","End time":"2026/11/30","days":"364","Status":"生效中","manufacturer":"原心联创"}
+{"name":"Meizu 21","System":"LineageOS 19 Beta","Start time":"2026/1/1","End time":"2026/12/31","days":"364","Status":"生效中","manufacturer":"原心联创"}
+{"name":"OnePlus Nord 4","System":"LineageOS 21.0 Beta","Start time":"2026/2/1","End time":"2027/1/31","days":"364","Status":"生效中","manufacturer":"原心联创"}
+{"name":"Realme GT Neo6","System":"LineageOS 20","Start time":"2026/3/1","End time":"2027/2/28","days":"364","Status":"生效中","manufacturer":"原心联创"}
+{"name":"iQOO Neo9","System":"LineageOS 19.1","Start time":"2026/4/1","End time":"2027/3/31","days":"364","Status":"生效中","manufacturer":"原心联创"}
+{"name":"Google Ple 4","System":"LineageOS 18.1 Beta2","Start time":"2025/9/7","End time":"2026/9/6","days":"364","Status":"生效中","manufacturer":"原心联创"}
+{"name":"Xiaomi Archytas","System":"LineageOS 19 Beta3","Start time":"2026/6/18","End time":"2026/9/12","days":"90","Status":"生效中","manufacturer":"原心联创"}
